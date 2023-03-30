@@ -1,2 +1,2 @@
-# eisenkern
-``Contemporary`` Multiprocess Micro Framework.
+# eisenmp
+Multiprocess Micro Framework
