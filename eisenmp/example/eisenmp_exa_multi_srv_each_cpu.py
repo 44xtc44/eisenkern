@@ -5,6 +5,8 @@ you extend or switch off defaults
 
 Multiple server on each CPU core, if server has that much.
 Not all servers are displayed. Use the port number to switch to a server.
+
+needs Flask_SQLAlchemy_Project_Template >=1.3
 """
 import os
 import time
@@ -81,7 +83,7 @@ def manager():
         # q_name, q_maxsize;
         ('mp_blue_q', 1),  # tuple, worker: toolbox.mp_blue_q.get()
         ('mp_red_q', 1),
-        ('mp_green_q', 1),  # one more for the science and wasting energy, I was told we are the last generation anyhow
+        ('mp_green_q', 1)
     ]
     # default call
     mP = eisenmp.Mp()
@@ -144,7 +146,7 @@ def red_q_get(toolbox):
     """"""
     while 1:
         if not toolbox.mp_red_q.empty():
-            port_lst = toolbox.mp_red_q.get()  # has header with serial number
+            port_lst = toolbox.mp_red_q.get()
             return port_lst
 
 
@@ -152,7 +154,7 @@ def green_q_get(toolbox):
     """"""
     while 1:
         if not toolbox.mp_green_q.empty():
-            port_lst = toolbox.mp_green_q.get()  # has header with serial number
+            port_lst = toolbox.mp_green_q.get()
             return port_lst
 
 
