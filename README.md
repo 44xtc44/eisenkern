@@ -1,7 +1,7 @@
 # eisenmp
  
-Python [Multiprocess](https://en.wikipedia.org/wiki/Multiprocessing) 
-[Framework](https://en.wikipedia.org/wiki/Software_framework) for Server and Mobiles
+Python 3.7 [Multiprocess](https://en.wikipedia.org/wiki/Multiprocessing) 
+[Framework](https://en.wikipedia.org/wiki/Software_framework) for Server and Mobiles 
 
 Features:
 
