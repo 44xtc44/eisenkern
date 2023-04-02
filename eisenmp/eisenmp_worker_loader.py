@@ -122,5 +122,5 @@ def mp_worker_entry(**kwargs):
     while 1:
 
         msg_lst = toolbox.mp_process_q.get()  # loader keeps proc alive and awaits, 'stop_proc'
-        if const.STOP_PROCESS in msg_lst:  # looks like [baustelle], upd. if all worker are threads, stay here
+        if const.STOP_PROCESS in msg_lst:
             break

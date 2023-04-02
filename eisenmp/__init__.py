@@ -5,30 +5,13 @@ An example function cracks a game quest.
 
     ::
 
-    class ProcEnv: Create Queues and worker processes [eisenmp_procenv]
-    class ProcInfo(SearchStr): Show time left and percentage done [eisenmp_info]
-    class Mp(QueueCollect): The very owner of the iterator and leader of the pack. [__init__.py]
-    class Result: Store findings for long-running tasks [eisenmp_utils.py]
-    f() worker: Process worker loops [eisenmp_worker plus folder]
-
-    class SearchStr: Dicts to compare a string with, search string generator [eisenmp_search]
-    class Download: download, store and unzip [eisenmp_download]
-
-    Inheritance - proc: ProcEnv -> QueueCollect -> GhettoBoss
-        Queue/Process -> Collect messages in boxes -> Manage
+    Inheritance - proc: ProcEnv -> QueueCollect -> Mp
+        Create Queue/Process -> Collect messages in boxes -> Manage, feed
 
     Thread names are in ProcEnv:
         QueueCollect [print_q, output_q, input_q, tools_q, info_q],
         GhettoGang [view_output_q_box, tools_q feeder],
         [ProcInfo]
-
-    current issues:
-        threads must be subclassed from thread lib, else zombies t=threading.Thread(...).start(), unstoppable
-        GhettoThread class is using getattr()
-        That leads to outsource of former methods to functions, to instantiate threads and run those f()
-        To import the modules of functions we can not instantiate the thread in the module with the f(),
-        since we can not get easily the module reference of our own module
-
 
 """
 import time
@@ -67,7 +50,6 @@ class Mp(QueueCollect):
 
     def run_q_feeder(self, **kwargs):
         """Threaded instance, run multiple q_feeder, called by manager of worker
-        min. eisenmp.run_q_feeder(generator=generator)
         """
         self.kwargs.update(kwargs)  # upd boss kwargs with generator, queues and header_msg
         threading.Thread(name='eisenmp_q_feeder',  # better than class thread here, no overlap, interesting.

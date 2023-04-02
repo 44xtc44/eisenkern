@@ -81,7 +81,8 @@ class QueueCollect(ProcEnv):
         self.thread_list.append(printQThread)
 
     def enable_output_q(self):
-        """Gang, Start a thread loop to not block and run beside boss loop.
+        """Start a thread loop to not block the show.
+        Want collect stop confirm worker msg and results, all lists
         """
         outputQThread = FunThread('eisenmp_OutputQThread', self.output_q_loop)
         outputQThread.start()
@@ -195,8 +196,9 @@ class QueueCollect(ProcEnv):
 
     def worker_mods_down_ask(self, list_header):
         """All worker MODULES confirm shutdown.
-        Worker uses the original name of its process in shut down msg!!!
-        Proc IS still running. Boss kills' em. Yeah, man.
+
+        Worker is using the original name of its process in shut down msg.
+        Process IS still running. Worker module entry function returned False.
 
         :params: list_header: answer of WORKER MODULE to stop request; string with proc id at end
         :returns: None; True if done
