@@ -4,7 +4,7 @@ import threading
 import eisenmp.utils.eisenmp_constants as constants
 
 
-class ProcInfo(threading.Thread):  # QueueCollect
+class ProcInfo(threading.Thread):
     """Thread; start(), cancel()
     Brute Force uses factorial as target to calculate.
     Prime uses 'range_num' of num generator as target.
