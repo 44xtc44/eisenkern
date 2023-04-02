@@ -1,7 +1,7 @@
 # eisenmp
  
 Python [Multiprocess](https://en.wikipedia.org/wiki/Multiprocessing) 
-[Framework](https://en.wikipedia.org/wiki/Software_framework)
+[Framework](https://en.wikipedia.org/wiki/Software_framework) for Server and Mobiles
 
 Features:
 
@@ -15,10 +15,13 @@ Features:
 flask_orm_user_db, web_csv_large-list, brute_force_attack, double_queue_feeding, multi_srv_ ...
 * All scenarios follow the **Template style** and have descriptions
 
+Workplace:
+* Server or mobile device
 
 Note:
 Generator prod. 1, 2, 3, 4, 5  ➜ we make Worker chunks, [los](https://de.wikipedia.org/wiki/Los_(Produktion))
 [1,2] [3,4] [5] lists. Each process worker gets one.
+
 
 ### min. ToDo
 
@@ -37,6 +40,12 @@ One Server (or more) on every CPU core:
 's ➜ to server ports on CPU cores ➜ to an IP address
 
 ## How it works
+Needs one **Caller (Mngr)** and one **Worker** fun() in the module for simple tasks.
+- ModuleConfiguration class collects data variables as default and custom variables in a **modConf** instance
+- Mngr fun() updates eisenmp with the **modConf** instance dictionary
+- create **custom Queue**s, either single named in a dict or as dict with category names for easy deployment
+- eisenmp threaded method **run_q_feeder** can be called multiple times to fill the worker Queues with generator output
+
 The loader imports **arbitrary** modules. Iterator loop threads (option) put work chunks in queues.
 The **first registered module function**, the worker, is called in an **endless loop**, as long as it exits after 
 each own cycle. Microcontroller style. It is the **last loaded module**.
@@ -45,7 +54,7 @@ Following modules in the register list (LIFO) execute a thread start function to
 They may control the worker and have access to its started instances references (offset address). 
 main(), Parent Process has no access in Child Processes. 
 It needs any help it can get. We use 'spawn' multiprocessing.
-See also the watchdog threaded module in the examples, please.
+See also the watchdog threaded module in the [Examples](https://github.com/44xtc44/eisenmp_examples) , please.
 
 Use Server only, set **stop_msg_disable=True**. This allows to use threaded modules only.
 
@@ -65,10 +74,8 @@ Default means **ready to use**:
 It may be a 27GB rainbow table; See the bruteforce (small) example, please
 - Output **can** be stored if **store_result** is set in config
 
-## Issues
-
 ## How to run the examples?
-Clone the repo and ``run an eisenmp_exa_...``.
+Clone the repo [Examples](https://github.com/44xtc44/eisenmp_examples) and ``run an eisenmp_exa_...``.
 
 Brute force cracks strings of an online-game alphabet salad quest. 
 
