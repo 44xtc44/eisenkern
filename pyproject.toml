@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "eisenmp"
-version = "0.9.1"
-description = "load multiple mods; Load a fixed number of servers into each proc; run every generator on every CPU core"
+version = "0.9.2"
+authors = [{name = "René Horn", email = "rene_horn@gmx.net" }]
+description = "Multiprocess Framework for Server and Mobiles; run your generator output and server on every CPU core,"
 keywords = ['multiprocess framework', 'python multiprocessor framework']
 license = {file = "LICENSE.rst"}
 readme = "README.md"
 requires-python = ">=3.7"
-dynamic = ['authors',]
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
