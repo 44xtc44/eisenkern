@@ -11,7 +11,8 @@ Features:
 * Build port groups with CPU cores and network adapters
 * Create **categories of Queues**, read them with **all custom vars** in a **ToolBox** dictionary, used by the worker
 * no libraries, light weight; (Linux, Windows)
-* **Examples** flask_orm_user_db, web_csv_large-list, brute_force_attack, double_queue_feeding, multi_srv_ ...
+* [Examples](https://github.com/44xtc44/eisenmp_examples) 
+flask_orm_user_db, web_csv_large-list, brute_force_attack, double_queue_feeding, multi_srv_ ...
 * All scenarios follow the **Template style** and have descriptions
 
 
