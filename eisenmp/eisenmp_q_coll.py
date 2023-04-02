@@ -3,7 +3,7 @@ import threading
 import contextlib
 import multiprocessing
 
-import eisenmp.utils.eisenmp_utils as g_utils
+import eisenmp.utils.eisenmp_utils as e_utils
 import eisenmp.utils.eisenmp_constants as const
 from eisenmp.eisenmp_procenv import ProcEnv
 from eisenmp.utils.eisenmp_info import ProcInfo
@@ -52,7 +52,7 @@ class QueueCollect(ProcEnv):
         self.stop_list = []  # proc stop answered, names collector
         self.result_lst_gang = []  # collected findings from procs for this run
         # collect results [baustelle]
-        self.g_utilsResult = g_utils.Result()  # interim result calc for long-running tasks, exec(foo), or (bar)
+        self.e_utilsResult = e_utils.Result()  # interim result calc for long-running tasks, exec(foo), or (bar)
 
     def enable_q_box_threads(self):
         """Collect Q messages and put em in a box for review, if enabled
@@ -110,7 +110,7 @@ class QueueCollect(ProcEnv):
         Stop signal strings used to init loops exit.
         Standard dict with num generator for unique keys.
         """
-        generator = g_utils.consecutive_number()
+        generator = e_utils.consecutive_number()
         while 1:
             if self.all_threads_stop:
                 break
@@ -127,7 +127,7 @@ class QueueCollect(ProcEnv):
         while 1:
             if self.all_threads_stop:
                 break
-            generator = g_utils.consecutive_number()
+            generator = e_utils.consecutive_number()
             while not self.all_threads_stop:
                 if not self.mp_info_q.empty():
                     msg = self.mp_info_q.get()
@@ -170,7 +170,7 @@ class QueueCollect(ProcEnv):
                         result_lst = outbox_list
                         p_result_row = outbox_list[1]
                         if 'store_result' in self.kwargs_env and self.kwargs_env['store_result']:
-                            self.g_utilsResult.result_dict_update(list_header, result_lst)
+                            self.e_utilsResult.result_dict_update(list_header, result_lst)
                             self.proc_result_list_findings(p_result_row)
 
                     outbox_list.append(const.GOT_RESULT_OUTPUT_Q)

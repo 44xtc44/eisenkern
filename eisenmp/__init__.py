@@ -36,7 +36,7 @@ import threading
 
 import eisenmp.eisenmp_q_coll as coll
 import eisenmp.eisenmp_procenv as procenv
-import eisenmp.utils.eisenmp_utils as g_utils
+import eisenmp.utils.eisenmp_utils as e_utils
 import eisenmp.utils.eisenmp_constants as const
 from eisenmp.eisenmp_q_coll import QueueCollect
 
@@ -88,7 +88,7 @@ class Mp(QueueCollect):
         feeder_input_q = kw['feeder_input_q'] if 'feeder_input_q' in kw else self.mp_input_q
 
         start = time.perf_counter()
-        num_gen = g_utils.consecutive_number()
+        num_gen = e_utils.consecutive_number()
         while 1:
             if self.all_threads_stop:
                 break

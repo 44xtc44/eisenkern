@@ -3,7 +3,7 @@ import multiprocessing
 from multiprocessing import Queue
 
 import eisenmp.eisenmp_worker_loader as loader
-import eisenmp.utils.eisenmp_utils as g_utils
+import eisenmp.utils.eisenmp_utils as e_utils
 import eisenmp.utils.eisenmp_constants as const
 
 multiprocessing.set_start_method('spawn', force=True)
@@ -148,6 +148,6 @@ class ProcEnv:
 
     def end_thread(self):
         """Instance and normal threads."""
-        g_utils.thread_shutdown_wait(*self.thread_list)
+        e_utils.thread_shutdown_wait(*self.thread_list)
         for t in self.thread_list:
             t.join()
