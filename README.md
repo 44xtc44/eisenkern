@@ -5,63 +5,55 @@ Python 3.7 [Multiprocess](https://en.wikipedia.org/wiki/Multiprocessing)
 
 Features:
 
-* Load modules from Network or FS. Load **multi, independent and before a worker** into ➜ Process
-* Run every Python generator on _every_ CPU core, enable auto collect results
-* Load a fixed number of servers into each process
+* Load modules from Network or FS. Load **multi, independent and before a worker**
+* Run every Python generator on _every_ CPU core
+* Process Manager, Load a fixed number of server or container into each process
 * Build port groups with CPU cores and network adapters
 * Create **categories of Queues**, read them with **all custom vars** in a **ToolBox** dictionary, used by the worker
-* no libraries, light weight; (Linux, Windows)
-* [Examples](https://github.com/44xtc44/eisenmp_examples) 
-flask_orm_user_db, web_csv_large-list, brute_force_attack, double_queue_feeding, multi_srv_ ...
+* See the features above in the
+[Examples repository](https://github.com/44xtc44/eisenmp_examples) 
 * All scenarios follow the **Template style** and have descriptions
-
-Workplace:
-* Server or mobile device
-
-Note:
-Generator prod. 1, 2, 3, 4, 5  ➜ we make Worker chunks, [los](https://de.wikipedia.org/wiki/Los_(Produktion))
-[1,2] [3,4] [5] lists. Each process worker gets one.
-
-
-### min. ToDo
+* no libraries, light weight; (Linux, Windows)
 
 Generator - iterator chunks on every CPU core:
-- (A) Mngr(): **Every generator** yield, or generator expression
-- (B) Wkr(): The **worker** wants a loop. Return True, get the next chunk or False for **auto exit worker and process**.
-- (C) Mngr(): Import and instantiate **eisenmp**. Register the worker module in a list.
-- (D) Mngr(): default call: **iterator** ...raid.run_q_feeder(generator=your generator), runs also on ➜ assigned queues
+- [Generator yield](https://docs.python.org/3/reference/expressions.html#yieldexpr)
+or 
+[(expression)](https://peps.python.org/pep-0289/)
+output 1, 2, 3, 4, 5 ➜ [ [1,2] [3,4] [5] ] eisenmp iterator list ➜ chunks for your Worker
+- (A) Mngr(): Import and instantiate **eisenmp**. Register the worker in (also) a list. 
+- (B) Mngr(): Assign Worker load and process count.
+- (C) Mngr(): Call **iterator** run_q_feeder(generator=Mngr generator)
+- (D) Wkr(): Loop over load count list chunks. Return False to **auto exit worker and process**, or get next chunk 
+[Examples](https://github.com/44xtc44/eisenmp_examples)
 
 One Server (or more) on every CPU core:
-- (C) Mngr(): Import and instantiate **eisenmp**. Register the worker module in a list.
-- (C.1) Wkr(): The **worker module** starts **ONE** server, blocks (run_forever on IP: foo port: 42) and serves whatever
-- (C.2) Wkr(): The **worker module** starts **MANY** server. All server starts must be threads **stop_msg_disable=True**
-- Server reads queues: Needs (A) Mngr and (D) Mngr
-- **Port groups** (applications, server): map **toolbox.worker_id**
-'s ➜ to server ports on CPU cores ➜ to an IP address
+- (A) Mngr(): Import and instantiate **eisenmp**. Register the worker module in a list.
+- (D.1) Wkr(): The **worker** starts **ONE** server, blocks (run_forever on IP: foo port: 42) and serves whatever
+- (D.2) Wkr(): The **worker** starts **MANY** server. Server start call must be threaded, set **stop_msg_disable=True**
+- Server read queues: Follow the Generator todo
+[Examples](https://github.com/44xtc44/eisenmp_examples)
+
+Port groups:
+- Map **toolbox.worker_id**'s ➜ to server ports on CPU cores ➜ to an IP address, 
+[Examples](https://github.com/44xtc44/eisenmp_examples)
 
 ## How it works
-Needs one **Caller (Mngr)** and one **Worker** fun() in the module for simple tasks.
-- ModuleConfiguration class collects data variables as default and custom variables in a **modConf** instance
-- Mngr fun() updates eisenmp with the **modConf** instance dictionary
-- create **custom Queue**s, either single named in a dict or as dict with category names for easy deployment
+You need one **Call (Mngr)** and one **Worker** fun() in the module.
+- class ModuleConfiguration, instance **modConf** collects content of default and custom variables, data types 
+- **modConf** updates eisenmp with its own instance dictionary 
+- Use default or create **custom Queue**s; They can own category names for easy deployment
 - eisenmp threaded method **run_q_feeder** can be called multiple times to fill the worker Queues with generator output
 
 The loader imports **arbitrary** modules. Iterator loop threads (option) put work chunks in queues.
 The **first registered module function**, the worker, is called in an **endless loop**, as long as it exits after 
-each own cycle. Microcontroller style. It is the **last loaded module**.
+each own cycle. It is the **last loaded module**.
 
 Following modules in the register list (LIFO) execute a thread start function to not block the Worker module. 
 They may control the worker and have access to its started instances references (offset address). 
-main(), Parent Process has no access in Child Processes. 
-It needs any help it can get. We use 'spawn' multiprocessing.
+main(), Parent Process has no access in 
+[spawned](https://docs.python.org/3/library/multiprocessing.html?highlight=spawn#spawn) Child processes.
+
 See also the watchdog threaded module in the [Examples](https://github.com/44xtc44/eisenmp_examples) , please.
-
-Use Server only, set **stop_msg_disable=True**. This allows to use threaded modules only.
-
-Generator output can be any data type (int, str, response stream chunks, floats) as long as it is delivered by a 
-[generator function (yield)](https://docs.python.org/3/reference/expressions.html#yieldexpr)
-or 
-[(generator expression)](https://peps.python.org/pep-0289/)
 
 
 Default ``six Queues``
@@ -73,6 +65,9 @@ Default means **ready to use**:
 - **mp_tools_q** for big tools stuff delivery to every single Worker proc module;
 It may be a 27GB rainbow table; See the bruteforce (small) example, please
 - Output **can** be stored if **store_result** is set in config
+
+## Issues
+eisenmp can run on Python 3.6 (Ubuntu test), but not the samples. Crash of Flask and SqlAlchemy
 
 ## How to run the examples?
 Clone the repo [Examples](https://github.com/44xtc44/eisenmp_examples) and ``run an eisenmp_exa_...``.
