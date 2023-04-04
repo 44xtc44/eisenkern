@@ -5,13 +5,13 @@ Python 3.7 [Multiprocess](https://en.wikipedia.org/wiki/Multiprocessing)
 
 Features:
 
-* Load modules from Network or FS. Load **multi, independent and before a worker**
-* Run every Python generator on _every_ CPU core
-* Process Manager, Load a fixed number of server or container into each process
-* Build port groups with CPU cores and network adapters
-* Create **categories of Queues**, read them with **all custom vars** in a **ToolBox** dictionary, used by the worker
+* **Load** modules from Network or FS. Load **multi, independent and before a worker**
+* **Calculate** every Python generator output on _every_ CPU core
+* **Process Manager**, assign a fixed number of server or container to each process
+* **Build** port groups with CPU cores and network adapters
+* **Categories of Queues**, read them with **all custom vars** in a **ToolBox** dictionary, used by the worker
 * See the features above in the
-[Examples repository](https://github.com/44xtc44/eisenmp_examples) 
+[Examples repository](https://github.com/44xtc44/eisenmp_examples), install pypi pkg, run 'eisenmp_examples', web server
 * All scenarios follow the **Template style** and have descriptions
 * no libraries, light weight; (Linux, Windows)
 
