@@ -1,31 +1,26 @@
 import time
 import threading
-from collections import defaultdict
 
 
 class Result:
     """Finest results only here.
-    Can save number stuff, not response chunks, or we crash
 
     """
+    result_dict = {}
 
-    def __init__(self):
-        self._result_dict = defaultdict(list)  # threads can read/write dict
+    def result_dict_update(self, key: str, id_result: tuple) -> None:
+        """Sort results yourself.
+        If something is wrong, you see one TID is not there.
 
-    @property
-    def result_dict(self):
-        return self._result_dict
+        Tuple for simple extraction: id, result = result_dict['PRIME_NUM']
+        {'PRIME_NUM': [(ticket_id, result_lst), (ticket_id, result_lst)]}
 
-    @result_dict.setter
-    def result_dict(self, update):
-        self._result_dict = update
-
-    @result_dict.deleter
-    def result_dict(self):
-        del self._result_dict
-
-    def result_dict_update(self, key, value):
-        self._result_dict[key].append(value)
+        :params: key: str name of the queue feeder 'header_msg' argument
+        :params: result_value_t: tuple(_TID_0, result)
+        """
+        if key not in self.result_dict:
+            self.result_dict[key] = []
+        self.result_dict[key].append(id_result)
 
 
 def consecutive_number():
