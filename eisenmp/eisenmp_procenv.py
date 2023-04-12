@@ -1,24 +1,29 @@
+"""ProcEnv
+
+"""
 import time
-import multiprocessing
+import multiprocessing as mp
 from multiprocessing import Queue
 
 import eisenmp.eisenmp_worker_loader as loader
 import eisenmp.utils.eisenmp_utils as e_utils
 import eisenmp.utils.eisenmp_constants as const
 
-multiprocessing.set_start_method('spawn', force=True)
-
 
 class ProcEnv:
-    """Create an environment for worker processes on CPUs.
+    """Create the environment for worker processes on CPUs.
     All queues shared among processes.
     'maxsize=1' can be altered, should be tested and documented.
+
+    - **Queues ONLY** in this version
+    - custom Queue builder with a queue in a dict to show a name
+    - another Queue builder can add a category name, dict in dict
 
     """
 
     def __init__(self):
         # CPU - process
-        self.num_cores = self.core_count_get()
+        self.NUM_PROCS = self.core_count_get()  # user override in mod
         self.proc_list = []  # join processes at the end
         # Queues
         self.q_max_size = 1
@@ -37,6 +42,7 @@ class ProcEnv:
         self.queue_cust_dict_std = {}  # std dict, val is a q
         self.queue_cust_dict_cat = {}  # custom category, dict in dict
         self.q_lst = []  # all queues in a list, clean up; 'queue_lst_get'
+        self.q_name_id_lst = [('mp_input_q (default)', id(self.mp_input_q), self.mp_info_q)]  # tuple (name, id, q_ref)
 
         # Threads - Collect queue grabber
         self.thread_list = []
@@ -63,23 +69,24 @@ class ProcEnv:
         """
         for name, maxsize in queue_name_maxsize:
             self.queue_cust_dict_std[name] = Queue(maxsize=maxsize)
+            self.q_name_id_lst.append((name, id(self.queue_cust_dict_std[name]), self.queue_cust_dict_std[name]))
+            pass
 
     def queue_cust_dict_category_create(self, *queue_cat_name_maxsize: tuple):
-        """('category_1', 'input_q_3', 10)"""
+        """('category_1', 'input_q_3', 10)
+        """
         for cat, name, maxsize in queue_cat_name_maxsize:
             new_dct = {name: Queue(maxsize=maxsize)}
             if cat not in self.queue_cust_dict_cat:
                 self.queue_cust_dict_cat[cat] = {}
             self.queue_cust_dict_cat[cat].update(new_dct)
+            self.q_name_id_lst.append((cat + '|' + name, id(new_dct[name]), new_dct[name]))
+            pass
 
     def queue_lst_get(self):
         """List of qs for shut down msg put in, of ...worker_loader.py
         """
-        q_lst = []  # dbg
-        for name, q in self.queue_std_dict.items():
-            if name == 'mp_print_q':  # else mass prn shutdown messages
-                continue
-            q_lst.append(q)
+        q_lst = [self.mp_input_q]
 
         for q in self.queue_cust_dict_std.values():  # custom, std dict
             self.q_lst.append(q)
@@ -93,40 +100,52 @@ class ProcEnv:
     @staticmethod
     def core_count_get():
         """"""
-        num = 1 if not multiprocessing.cpu_count() else multiprocessing.cpu_count() / 2  # hyper thread
+        num = 1 if not mp.cpu_count() else mp.cpu_count() / 2  # hyper thread
         return int(num)
 
     def kwargs_env_update_custom(self, **kwargs):
-        """override default num_cores,
+        """override default NUM_PROCS,
         'queue_lst_get' for worker loader stop msg in all qs
         """
-        self.num_cores = kwargs['num_cores'] if 'num_cores' in kwargs and kwargs['num_cores'] else self.core_count_get()
+        self.NUM_PROCS = kwargs['NUM_PROCS'] if 'NUM_PROCS' in kwargs and kwargs['NUM_PROCS'] else self.core_count_get()
         kwargs.update(self.queue_std_dict)
         kwargs.update(self.queue_cust_dict_std)
         kwargs.update(self.queue_cust_dict_cat)
-        all_qs_dict = {'all_qs_lst_dct': self.queue_lst_get()}
+        all_qs_dict = {const.ALL_QUEUES_LIST: self.queue_lst_get()}  # view q name,id,ref in debugger: 'q_name_id_lst'
         kwargs.update(all_qs_dict)
         return kwargs
 
-    def run_proc(self, **kwargs):  # test with args from caller
+    def run_proc(self, **kwargs):
         """Create a Process for each CPU core, if `num_proc` None set or not set.
-        kwargs dict is updated for worker 'toolbox', reveals all vars and dead ref. avail.
+        - kwargs dict is updated for worker 'toolbox', reveals all vars and dead references (spawn) available
+
+        :params: kwargs: -
+        :params: start_method: selection spawn, fork
+        :params: START_SEQUENCE_NUM: useful if eisenmp instance is called often, process numbers rise, but start from 0
+        :params: target=loader: the worker_loader module is loaded and keeps the process alive
         """
         kwargs = self.kwargs_env_update_custom(**kwargs)
-        self.kwargs_env.update(kwargs)
+        self.kwargs_env.update(kwargs)  # eat kwargs
 
-        print(f'\nCreate {self.num_cores} processes.')
-        for core in range(self.num_cores):
+        start_method = 'spawn' if 'START_METHOD' not in kwargs else kwargs['START_METHOD']
+        mp.set_start_method(start_method, force=True)
+
+        print(f'\nCreate {self.NUM_PROCS} processes.')
+        for core in range(self.NUM_PROCS):
             print(core, end=" ")
-            proc = multiprocessing.Process(target=loader.mp_worker_entry,
-                                           kwargs=kwargs)
+            # start_sequence_num always starts zero and is independent of sub-process spawn number
+            start_sequence_num = {'START_SEQUENCE_NUM': core}  # worker in proc can grab a specific queue 0=red,1=blue
+            kwargs.update(start_sequence_num)
+
+            proc = mp.Process(target=loader.mp_worker_entry,
+                              kwargs=kwargs)
             proc.start()
 
             self.proc_list.append(proc)
         self.mp_print_q.put('\n')
 
     def stop_proc(self):
-        """"""
+        """All worker must have confirmed shutdown msg."""
         for proc in range(len(self.proc_list)):
             self.mp_process_q.put(['Simon Says:', const.STOP_PROCESS])
 
