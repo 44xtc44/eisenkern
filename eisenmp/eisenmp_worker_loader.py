@@ -13,26 +13,30 @@ import eisenmp.utils.eisenmp_constants as const
 
 class ToolBox:
     """Storage box for a Single Worker Process.
+    Switch as much data fields to constant like shape. Used in worker.
+    User can distinguish between custom and (automatic) in-build variables or constants.
 
     """
     def __init__(self):
+        # default queues names from procenv
         self.mp_info_q = None  # performance data, or other
         self.mp_tools_q = None  # data too big to send with every list to worker
         self.mp_print_q = None  # formatted screen output with multiprocessor lock(), use sparse
         self.mp_input_q = None
         self.mp_output_q = None
         self.mp_process_q = None  # proc shutdown msg's
-        self.next_lst = None  # input_q, next list from your generator -> Ghetto is iterator, list creator
-        self.worker_id = None  # name id from Process name
-        self.worker_pid = None  # process pid
-        self.worker_name = None  # stop confirmations collected by GhettoGang and send shutdown signal to program
-        self.header_msg = None  # list header, attached for every list
-        self.multi_tool = None  # tools_q, can be any prerequisite object for a module
-        self.stop_msg = None  # all q, not mp_print_q, if Boss StopIteration is raised, or this wrk informs other worker
-        self.stop_confirm = ''  # output_q, GhettoGang collects msg to send shutdown signal to program
-        self.result_header_proc = ''  # identify proc result in output_q_box
-        self.perf_header_eta = None  # 'PROC_PERF_ETA_'
-        self.perf_current_eta = None  # list rows done or other count
+        # reserved names
+        self.NEXT_LIST = None  # input_q, next list from your generator -> Ghetto is iterator, list creator
+        self.WORKER_ID = None  # name id from Process name
+        self.WORKER_PID = None  # process pid
+        self.WORKER_NAME = None  # stop confirmations collected by GhettoGang and send shutdown signal to program
+        self.MULTI_TOOL = None  # tools_q, can be any prerequisite object for a module
+        self.STOP_MSG = None  # all q, not mp_print_q, if Boss StopIteration is raised, or this wrk informs other worker
+        self.STOP_CONFIRM = ''  # output_q, GhettoGang collects msg to send shutdown signal to program
+        self.OUTPUT_HEADER = ''  # identify proc result in output_q_box
+        self.INPUT_HEADER = ''
+        self.PERF_HEADER_ETA = None  # 'PROC_PERF_ETA_'
+        self.PERF_CURRENT_ETA = None  # list rows done or other count
         self.kwargs = None
 
 
@@ -49,19 +53,19 @@ def module_path_load(file_path):
 
 def all_worker_exit_msg(toolbox):
     """
-    Warning: Signal stop event to [ALL] -----> WORKER modules, not process.
+    Warning: Signal stop event to [ALL] -----> worker MODULES, not to PROCESS.
 
     :params: toolbox: tools and Queues for processes
     """
-    stop_token_lst = [const.RESULT_HEADER_PROC,
+    stop_token_lst = [const.OUTPUT_HEADER,
                       const.STOP_MSG]  # 'STOP' was sent if last list was produced; now we inform other worker
 
-    for q in toolbox.all_qs_lst_dct:  # next worker on any q reads 'stop_token_lst', except 'mp_print_q'
+    for q in toolbox.ALL_QUEUES_LIST:  # next worker on any q reads 'stop_token_lst', except 'mp_print_q'
         if q.empty():
             q.put(stop_token_lst)
 
-    toolbox.mp_output_q.put([toolbox.stop_confirm])  # essential msg for caller, count stop to exit
-    toolbox.mp_print_q.put(f'\texit WORKER {toolbox.worker_id}')
+    toolbox.mp_output_q.put([toolbox.STOP_CONFIRM])  # essential msg for caller, count stop to exit
+    toolbox.mp_print_q.put(f'\texit WORKER {toolbox.WORKER_ID}')
     pass
 
 
@@ -78,14 +82,14 @@ def mp_worker_entry(**kwargs):
     tool_box = {name: ToolBox()}
     tool_box[name].__dict__.update(kwargs)  # ToolBox class, add user defined attributes of ModuleConfiguration inst
     # defaults
-    tool_box[name].worker_id = int(proc_id[1])
-    tool_box[name].worker_pid = int(os.getpid())
-    tool_box[name].worker_name = name
-    tool_box[name].stop_msg = const.STOP_MSG
-    tool_box[name].stop_confirm = const.STOP_CONFIRM + name
-    tool_box[name].result_header_proc = const.RESULT_HEADER_PROC
-    tool_box[name].perf_header_eta = const.PERF_HEADER_ETA  # performance list header for ProcInfo
-    tool_box[name].perf_current_eta = None
+    tool_box[name].WORKER_ID = int(proc_id[1])
+    tool_box[name].WORKER_PID = int(os.getpid())
+    tool_box[name].WORKER_NAME = name
+    tool_box[name].STOP_MSG = const.STOP_MSG
+    tool_box[name].STOP_CONFIRM = const.STOP_CONFIRM + name
+    tool_box[name].OUTPUT_HEADER = const.OUTPUT_HEADER
+    tool_box[name].PERF_HEADER_ETA = const.PERF_HEADER_ETA  # performance list header for ProcInfo
+    tool_box[name].PERF_CURRENT_ETA = None
     tool_box[name].kwargs = kwargs
 
     toolbox = tool_box[name]  # use normal instance like
@@ -115,7 +119,7 @@ def mp_worker_entry(**kwargs):
 
         busy = worker(toolbox)  # until worker reads the iterator STOP msg
         if not busy:
-            if 'stop_msg_disable' not in toolbox.kwargs or not toolbox.kwargs['stop_msg_disable']:
+            if 'STOP_MSG_DISABLE' not in toolbox.kwargs or not toolbox.kwargs['STOP_MSG_DISABLE']:
                 all_worker_exit_msg(toolbox)  # stop msg in all queues, if not all loaded worker are threads
             break
 
@@ -123,4 +127,8 @@ def mp_worker_entry(**kwargs):
 
         msg_lst = toolbox.mp_process_q.get()  # loader keeps proc alive and awaits, 'stop_proc'
         if const.STOP_PROCESS in msg_lst:
+
+            for q in toolbox.ALL_QUEUES_LIST:  # multiple qs feeder may stick if first sent the worker stop
+                if not q.empty():
+                    q.get()
             break
