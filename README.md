@@ -13,7 +13,7 @@ Features:
 * Worker **module_loader** decouples your Worker imports from Main()
 * **auto Exit** of worker and process
 * Start methods, **spawn**, **fork** and **forkserver**
-* Create **port groups** on CPU cores and connect network adapters
+* Create VM_ware like **port groups** on CPU cores and stream with (tcp/http) maximum speed via selected NIC adapters
 * Process **START_SEQUENCE_NUM** Worker on a CPU core can grab a specific queue 0=red_q, 1=blue_q,2=yellow_q
 * **Categories of Queues**, read them with **all custom vars** in a worker **ToolBox** dictionary
 * no libraries, light weight; (Linux, Windows)
