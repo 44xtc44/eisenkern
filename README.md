@@ -1,76 +1,85 @@
 # eisenmp
  
-Python 3.7 [Multiprocess](https://en.wikipedia.org/wiki/Multiprocessing) 
+Python 3.7 
+[Multiprocessor](https://en.wikipedia.org/wiki/Multiprocessing)
 [Framework](https://en.wikipedia.org/wiki/Software_framework) for Server and Mobiles 
+
+Forget about pools, swim in the sea.
 
 Features:
 
-* **Load** modules from Network or FS. Load **multi, independent and before a worker**
-* **Calculate** every Python generator output on _every_ CPU core
-* **Process Manager**, assign a fixed number of server or container to each process
-* **Build** port groups with CPU cores and network adapters
-* **Categories of Queues**, read them with **all custom vars** in a **ToolBox** dictionary, used by the worker
-* See the features above in the
-[Examples repository](https://github.com/44xtc44/eisenmp_examples), install pypi pkg, run 'eisenmp_examples', web server
-* All scenarios follow the **Template style** and have descriptions
+* Create **uniform** multiprocess programs for your projects
+* Calculate your Python generator output on _every_ CPU core
+* Worker **module_loader** decouples your Worker imports from Main()
+* **auto Exit** of worker and process
+* Start methods, **spawn**, **fork** and **forkserver**
+* Create **port groups** on CPU cores and connect network adapters
+* Process **START_SEQUENCE_NUM** Worker on a CPU core can grab a specific queue 0=red_q, 1=blue_q, 2=yellow_q
+* **Categories of Queues**, read them with **all custom vars** in a worker **ToolBox** dictionary
+* Visit the features above in the
+[Examples gitHub repository](https://github.com/44xtc44/eisenmp_examples), 
+or get the [PyPi package](https://pypi.org/project/eisenmp-examples/), 
+run **eisenmp_url** simpleHTTP Ajax server
+* All scenarios run on **reusable Template Modules**. Enjoy the descriptions and discover.
 * no libraries, light weight; (Linux, Windows)
+
+## How it works
+You write two functions and two modules.
+Let's call 'em **Generator.py** and **Worker.py**.
+
+1. Generator.py starts a new process, _but_ the target is **module_loader.py** (loader).
+2. loader imports your (independent) Worker.py module from file system. 
+This makes sure that only imports of the worker.py module are loaded, without side effects.
+3. loader sits in a loop and calls your Worker.py entry function endless. Until there is no more work in the queues.
+This loop keeps the process alive.
+4. **q_feeder** iterator sends a STOP Worker message with the last chunk. Your Worker reads STOP, return False and exit. 
+5. The **module loader** then puts a STOP Worker message in all other input queues.
+Loader runs idle and awaits the internal STOP Process message. **Next** Worker reads STOP, exit ...
+
+Default ``six Queues``
+- ``Input`` worker lists, ``Output`` result and stop lists, ``Process`` shutdown
+- ``Tools``, ``Print``, ``Info``
+
+### In detail:
 
 Generator - iterator chunks on every CPU core:
 - [Generator yield](https://docs.python.org/3/reference/expressions.html#yieldexpr)
 or 
 [(expression)](https://peps.python.org/pep-0289/)
-output 1, 2, 3, 4, 5 ➜ [ [1,2] [3,4] [5] ] eisenmp iterator list ➜ chunks for your Worker
+output 1, 2, 3, 4, 5 ➜ eisenmp iterator list [ [1,2] [3,4] [5] ] ➜ **NUM_ROWS** chunks for your Worker
 - (A) Mngr(): Import and instantiate **eisenmp**. Register the worker in (also) a list. 
 - (B) Mngr(): Assign Worker load and process count.
 - (C) Mngr(): Call **iterator** run_q_feeder(generator=Mngr generator)
-- (D) Wkr(): Loop over load count list chunks. Return False to **auto exit worker and process**, or get next chunk 
-[Examples](https://github.com/44xtc44/eisenmp_examples)
+- (D) Wkr(): Loop over **NUM_ROWS** list chunks. Return False to **auto exit worker and process**, or get next chunk 
+[Examples gitHub](https://github.com/44xtc44/eisenmp_examples)
+or get the [PyPi package](https://pypi.org/project/eisenmp-examples/)
 
 One Server (or more) on every CPU core:
 - (A) Mngr(): Import and instantiate **eisenmp**. Register the worker module in a list.
 - (D.1) Wkr(): The **worker** starts **ONE** server, blocks (run_forever on IP: foo port: 42) and serves whatever
-- (D.2) Wkr(): The **worker** starts **MANY** server. Server start call must be threaded, set **stop_msg_disable=True**
+- (D.2) Wkr(): The **worker** starts **MANY** server. Server start call must be threaded, set **STOP_MSG_DISABLE=True**
 - Server read queues: Follow the Generator todo
-[Examples](https://github.com/44xtc44/eisenmp_examples)
+[Examples gitHub](https://github.com/44xtc44/eisenmp_examples)
+or get the [PyPi package](https://pypi.org/project/eisenmp-examples/)
 
 Port groups:
-- Map **toolbox.worker_id**'s ➜ to server ports on CPU cores ➜ to an IP address, 
-[Examples](https://github.com/44xtc44/eisenmp_examples)
-
-## How it works
-You need one **Call (Mngr)** and one **Worker** fun() in the module.
-- class ModuleConfiguration, instance **modConf** collects content of default and custom variables, data types 
-- **modConf** updates eisenmp with its own instance dictionary 
-- Use default or create **custom Queue**s; They can own category names for easy deployment
-- eisenmp threaded method **run_q_feeder** can be called multiple times to fill the worker Queues with generator output
-
-The loader imports **arbitrary** modules. Iterator loop threads (option) put work chunks in queues.
-The **first registered module function**, the worker, is called in an **endless loop**, as long as it exits after 
-each own cycle. It is the **last loaded module**.
-
-Following modules in the register list (LIFO) execute a thread start function to not block the Worker module. 
-They may control the worker and have access to its started instances references (offset address). 
-main(), Parent Process has no access in 
-[spawned](https://docs.python.org/3/library/multiprocessing.html?highlight=spawn#spawn) Child processes.
-
-See also the watchdog threaded module in the [Examples](https://github.com/44xtc44/eisenmp_examples) , please.
+- Map **toolbox.WORKER_ID**'s ➜ to server ports on CPU cores ➜ to an IP address, 
+[Examples gitHub](https://github.com/44xtc44/eisenmp_examples)
+or get the [PyPi package](https://pypi.org/project/eisenmp-examples/)
 
 
-Default ``six Queues``
-- ``Input`` serial number header, ``Output`` result and stop lists w. header, ``Process`` shutdown
-- ``Tools``, ``Print``, ``Info``
-
-Default means **ready to use**:
-- **mp_input_q** lists have a header with a **serial number** to be able to recreate the original order of chunks
+### ready to use:
+- **run_q_feeder()** iterator lists get a **serial number** header to recreate the original order of chunks
 - **mp_tools_q** for big tools stuff delivery to every single Worker proc module;
 It may be a 27GB rainbow table; See the bruteforce (small) example, please
-- Output **can** be stored if **store_result** is set in config
+- Output **can** be stored if **RESULTS_STORE** is set in config
+
 
 ## Issues
-eisenmp can run on Python 3.6 (Ubuntu test), but not the samples. Crash of Flask and SqlAlchemy
+eisenmp can run on Python 3.6 (Ubuntu test), but not the samples.
 
 ## How to run the examples?
-Clone the repo [Examples](https://github.com/44xtc44/eisenmp_examples) and ``run an eisenmp_exa_...``.
+Clone the repo [Examples gitHub](https://github.com/44xtc44/eisenmp_examples) and ``run an eisenmp_exa_...``.
 
 Brute force cracks strings of an online-game alphabet salad quest. 
 
