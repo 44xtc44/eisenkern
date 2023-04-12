@@ -1,9 +1,10 @@
 # eisenmp
 #########
  
-Python 3.7 
-[Multiprocessor](https://en.wikipedia.org/wiki/Multiprocessing)
-[Framework](https://en.wikipedia.org/wiki/Software_framework) for Server and Mobiles 
+Python 3.7
+
+`Multiprocessor <https://en.wikipedia.org/wiki/Multiprocessing>`_
+`Framework <https://en.wikipedia.org/wiki/Software_framework>`_ for Server and Mobiles
 
 Forget about pools, swim in the sea.
 
@@ -18,8 +19,8 @@ Features:
 * Process **START_SEQUENCE_NUM** Worker on a CPU core can grab a specific queue 0=red_q, 1=blue_q, 2=yellow_q
 * **Categories of Queues**, read them with **all custom vars** in a worker **ToolBox** dictionary
 * Visit the features above in the
-[Examples gitHub repository](https://github.com/44xtc44/eisenmp_examples), 
-or get the [PyPi package](https://pypi.org/project/eisenmp-examples/), 
+`Examples gitHub repository <https://github.com/44xtc44/eisenmp_examples>`_,
+or get the `PyPi package <https://pypi.org/project/eisenmp-examples/>`_,
 run **eisenmp_url** simpleHTTP Ajax server
 * All scenarios run on **reusable Template Modules**. Enjoy the descriptions and discover.
 * no libraries, light weight; (Linux, Windows)
@@ -44,7 +45,7 @@ Default ``six Queues``
 ### In detail:
 
 Generator - iterator chunks on every CPU core:
-- [Generator yield](https://docs.python.org/3/reference/expressions.html#yieldexpr)
+- `Generator yield <https://docs.python.org/3/reference/expressions.html#yieldexpr>`_
 or 
 [(expression)](https://peps.python.org/pep-0289/)
 output 1, 2, 3, 4, 5 ➜ eisenmp iterator list [ [1,2] [3,4] [5] ] ➜ **NUM_ROWS** chunks for your Worker
@@ -52,22 +53,21 @@ output 1, 2, 3, 4, 5 ➜ eisenmp iterator list [ [1,2] [3,4] [5] ] ➜ **NUM_ROW
 - (B) Mngr(): Assign Worker load and process count.
 - (C) Mngr(): Call **iterator** run_q_feeder(generator=Mngr generator)
 - (D) Wkr(): Loop over **NUM_ROWS** list chunks. Return False to **auto exit worker and process**, or get next chunk 
-[Examples gitHub](https://github.com/44xtc44/eisenmp_examples)
-or get the [PyPi package](https://pypi.org/project/eisenmp-examples/)
+`Examples gitHub repository <https://github.com/44xtc44/eisenmp_examples>`_,
+or get the `PyPi package <https://pypi.org/project/eisenmp-examples/>`_
 
 One Server (or more) on every CPU core:
 - (A) Mngr(): Import and instantiate **eisenmp**. Register the worker module in a list.
 - (D.1) Wkr(): The **worker** starts **ONE** server, blocks (run_forever on IP: foo port: 42) and serves whatever
 - (D.2) Wkr(): The **worker** starts **MANY** server. Server start call must be threaded, set **STOP_MSG_DISABLE=True**
 - Server read queues: Follow the Generator todo
-[Examples gitHub](https://github.com/44xtc44/eisenmp_examples)
-or get the [PyPi package](https://pypi.org/project/eisenmp-examples/)
+`Examples gitHub repository <https://github.com/44xtc44/eisenmp_examples>`_,
+or get the `PyPi package <https://pypi.org/project/eisenmp-examples/>`_
 
 Port groups:
 - Map **toolbox.WORKER_ID**'s ➜ to server ports on CPU cores ➜ to an IP address, 
-[Examples gitHub](https://github.com/44xtc44/eisenmp_examples)
-or get the [PyPi package](https://pypi.org/project/eisenmp-examples/)
-
+`Examples gitHub repository <https://github.com/44xtc44/eisenmp_examples>`_,
+or get the `PyPi package <https://pypi.org/project/eisenmp-examples/>`_
 
 ### ready to use:
 - **run_q_feeder()** iterator lists get a **serial number** header to recreate the original order of chunks
@@ -140,7 +140,7 @@ Brute force cracks strings of an online-game alphabet salad quest.
     (B) len(str) >=  12, pre reduce a len(str) list. Kick out words which are not matching char type and count.
 
 `eisenmp` uses Pythons permutation generator
- [itertools](https://docs.python.org/3/library/itertools.html?highlight=itertools.permutations#itertools.permutations)
+ `itertools <https://docs.python.org/3/library/itertools.html?highlight=itertools.permutations#itertools.permutations>`_
 for the brute force attack example.
 
     Another example downloads a large list and calculates average for one column.
