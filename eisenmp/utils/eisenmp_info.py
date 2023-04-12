@@ -28,7 +28,7 @@ class ProcInfo(threading.Thread):
         self.info_shutdown = False
         self.print_q = print_q
         self.info_q_box = info_q_box  # dict
-        self.info_td_max = kwargs['info_td_max'] if 'info_td_max' in kwargs else None
+        self.INFO_THREAD_MAX = kwargs['INFO_THREAD_MAX'] if 'INFO_THREAD_MAX' in kwargs else None
         self.info_td_exec = kwargs['info_td_exec'] if 'info_td_exec' in kwargs else None
 
     def run(self):
@@ -66,8 +66,8 @@ class ProcInfo(threading.Thread):
                     list_header = info_box[idx][0]
                     if list_header[:14] == constants.PERF_HEADER_ETA:
                         a_num = int(info_box[idx][1])
-                        if self.info_td_max:
-                            self.perf_dict_eta['target'] = self.info_td_max
+                        if self.INFO_THREAD_MAX:
+                            self.perf_dict_eta['target'] = self.INFO_THREAD_MAX
                             if self.info_td_exec:
                                 exec(self.info_td_exec)
                             else:
