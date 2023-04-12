@@ -14,14 +14,21 @@ Features:
 * **auto Exit** of worker and process
 * Start methods, **spawn**, **fork** and **forkserver**
 * Create **port groups** on CPU cores and connect network adapters
-* Process **START_SEQUENCE_NUM** Worker on a CPU core can grab a specific queue 0=red_q, 1=blue_q, 2=yellow_q
+* Process **START_SEQUENCE_NUM** Worker on a CPU core can grab a specific queue 0=red_q, 1=blue_q,2=yellow_q
 * **Categories of Queues**, read them with **all custom vars** in a worker **ToolBox** dictionary
-* Visit the features above in the
-[Examples gitHub repository](https://github.com/44xtc44/eisenmp_examples), 
-or get the [PyPi package](https://pypi.org/project/eisenmp-examples/), 
-run **eisenmp_url** simpleHTTP Ajax server
-* All scenarios run on **reusable Template Modules**. Enjoy the descriptions and discover.
 * no libraries, light weight; (Linux, Windows)
+
+Visit the features above in the
+[Examples gitHub repository](https://github.com/44xtc44/eisenmp_examples), 
+or get the [Examples PyPi package](https://pypi.org/project/eisenmp-examples/),
+run 
+
+    eisenmp_url 
+    or 
+    eisenmp_menu
+simpleHTTP Ajax server, or terminal menu
+
+All scenarios run on **reusable Template Modules**. Enjoy the descriptions and discover.
 
 ## How it works
 You write two functions and two modules.
@@ -79,7 +86,24 @@ It may be a 27GB rainbow table; See the bruteforce (small) example, please
 eisenmp can run on Python 3.6 (Ubuntu test), but not the samples.
 
 ## How to run the examples?
-Clone the repo [Examples gitHub](https://github.com/44xtc44/eisenmp_examples) and ``run an eisenmp_exa_...``.
+Most easy is PyPi package mentioned above. **eisenmp** will be installed also.
+
+Clone both repos.
+[eisenmp](https://github.com/44xtc44/eisenmp) and
+[eisenmp_examples](https://github.com/44xtc44/eisenmp_examples)
+
+Install in editable pip mode.
+
+    cd eisenmp 
+    pip3 install -e .  # uninstall (linux pip3) with: pip3 uninstall eisenmp
+
+    cd eisenmp_examples
+    pip3 install -e .  # uninstall with: pip3 uninstall eisenmp_examples
+Run the examples.
+ 
+    eisenmp_url
+    # or
+    eisenmp_menu
 
 Brute force cracks strings of an online-game alphabet salad quest. 
 
