@@ -9,13 +9,15 @@ import eisenmp.eisenmp_worker_loader as loader
 import eisenmp.utils.eisenmp_utils as e_utils
 import eisenmp.utils.eisenmp_constants as const
 
+mp.set_start_method('spawn', force=True)  # override in ProcEnv.run_proc
+
 
 class ProcEnv:
     """Create the environment for worker processes on CPUs.
     All queues shared among processes.
     'maxsize=1' can be altered, should be tested and documented.
 
-    - **Queues ONLY** in this version
+    - **Queues ONLY**
     - custom Queue builder with a queue in a dict to show a name
     - another Queue builder can add a category name, dict in dict
 
