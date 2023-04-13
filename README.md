@@ -70,7 +70,7 @@ One Server (or more) on every CPU core:
 or get the [PyPi package](https://pypi.org/project/eisenmp-examples/)
 
 Port groups:
-- Map **toolbox.WORKER_ID**'s ➜ to server ports on CPU cores ➜ to an IP address, 
+- Map **START_SEQUENCE_NUM**'s ➜ to multiple (server) ports on CPU cores ➜ to an IP address, 
 [Examples gitHub](https://github.com/44xtc44/eisenmp_examples)
 or get the [PyPi package](https://pypi.org/project/eisenmp-examples/)
 
