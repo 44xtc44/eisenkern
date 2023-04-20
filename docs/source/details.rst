@@ -44,7 +44,7 @@ One Server (or more) on every CPU core
 
 - (A) Mngr(): Import and instantiate **eisenmp**. Register the worker module in a list.
 - (D.1) Wkr(): The **worker** starts **ONE** server, blocks (run_forever on IP: foo port: 42) and serves whatever
-- (D.2) Wkr(): The **worker** starts **MANY** server. Server start call must be threaded, set **STOP_MSG_DISABLE=True**
+- (D.2) Wkr(): The **worker** starts **MANY** server. Server start call must be threaded
 - Server read queues: Follow the Generator todo
 
 ::
