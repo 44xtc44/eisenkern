@@ -116,7 +116,7 @@ You can validate the result ticket id numbers if generator count is known.
 
 .. note::
 
-       generator_items / NUM_ROW (workload_items per CPU) = number of Ticket ID's
+       generator_items / ROWS_MAX (workload_items per CPU) = number of Ticket ID's
 
 Results
 ~~~~~~~~
