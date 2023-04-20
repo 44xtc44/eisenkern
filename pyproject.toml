@@ -9,7 +9,7 @@ authors = [{name = "René Horn", email = "rene_horn@gmx.net" }]
 description = "Multiprocess Framework for Server and Mobiles; run your generator output and server on every CPU core,"
 keywords = ['multiprocess framework', 'python multiprocessor framework']
 license = {file = "LICENSE.rst"}
-readme = "README.md"
+readme = "./docs/source/README.rst"
 requires-python = ">=3.7"
 classifiers = [
     "Programming Language :: Python :: 3",
