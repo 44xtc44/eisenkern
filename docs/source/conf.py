@@ -29,7 +29,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 # pip install sphinxcontrib-napoleon
 # Use sphinx-apidoc to build your API documentation:
 # $ cd docs
-# $ sphinx-apidoc -f -o source/ ../eisenradio/   (use full paths for both, __init__.py in the project folders)
+# $ sphinx-apidoc -f -o source/ ../eisenmp/   (use full paths for both, __init__.py in the project folders)
 # make html; .\make html, on powerShell
 
 # Docstring Sections¶
@@ -71,7 +71,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'eisenmp'
-copyright = 'BSD-3, 2023, René Horn'
+copyright = 'BSD-3-Clause, 2023, René Horn'
 author = 'René Horn'
 
 
@@ -82,6 +82,7 @@ author = 'René Horn'
 extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.autodoc',
+    'sphinx.ext.autosectionlabel'
 ]
 
 # Napoleon settings
@@ -110,7 +111,7 @@ html_theme = 'sphinx_rtd_theme'
 pygments_style = 'sphinx'
 
 html_static_path = ['_static']
-html_logo = "eisenmp_logo.png"
+html_logo = "./_static/eisenmp_logo.svg"
 html_logo_only = True
 html_display_version = False
 html_css_files = [
