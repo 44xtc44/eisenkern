@@ -36,9 +36,9 @@ reserved names
      **INPUT_HEADER**        should be the input queue name, ident queue result if multiple queues are used on one output
      **PERF_HEADER_ETA**     str PERF_HEADER_ETA
      **PERF_CURRENT_ETA**    header of list rows done for info_thread
-     **NUM_ROWS**            1_000  # workload for one CPU core of generator output, the default iterator appends as row to a list
+     **ROWS_MAX**            1_000  # workload for one CPU core of generator output, the default iterator appends as row to a list
      **STOP_PROCESS**        'STOP_PROC'  # 'output_q_box_view' triggers all procs stop, if all worker confirmed stop
-     **NUM_PROCS**           None  # default, all processor cores
+     **PROCS_MAX**           None  # default, all processor cores
      **TICKET_ID_PREFIX**    '_TID_'
      **ALL_QUEUES_LIST**     'ALL_QUEUES_LIST'  # module_loader puts stop msg in queues
     ======================= ==================================================================
