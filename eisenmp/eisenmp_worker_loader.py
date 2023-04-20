@@ -26,17 +26,17 @@ class ToolBox:
         self.mp_output_q = None
         self.mp_process_q = None  # proc shutdown msg's
         # reserved names
-        self.NEXT_LIST = None  # input_q, next list from your generator -> Ghetto is iterator, list creator
-        self.WORKER_ID = None  # name id from Process name
+        self.NEXT_LIST = None  # next list from your generator -> iterator creates list
+        self.WORKER_ID = None  # Process-1 -> 1
         self.WORKER_PID = None  # process pid
-        self.WORKER_NAME = None  # stop confirmations collected by GhettoGang and send shutdown signal to program
-        self.MULTI_TOOL = None  # tools_q, can be any prerequisite object for a module
-        self.STOP_MSG = None  # all q, not mp_print_q, if Boss StopIteration is raised, or this wrk informs other worker
-        self.STOP_CONFIRM = ''  # output_q, GhettoGang collects msg to send shutdown signal to program
+        self.WORKER_NAME = None  # process name
+        self.MULTI_TOOL = None  # tools_q, can be any prerequisite object for a module (made for bruteforce attacks)
+        self.STOP_MSG = None  # not mp_print_q, ...worker_loader in one process informs other processes about stop
+        self.STOP_CONFIRM = ''  # output_q_box thread gets worker messages, send exit messages to now idle processes
         self.OUTPUT_HEADER = ''  # identify proc result in output_q_box
-        self.INPUT_HEADER = ''
-        self.PERF_HEADER_ETA = None  # 'PROC_PERF_ETA_'
-        self.PERF_CURRENT_ETA = None  # list rows done or other count
+        self.INPUT_HEADER = ''  # ident proc result output_q_box (not stop msg) and copy result to result[INPUT_HEADER]
+        self.PERF_HEADER_ETA = None  # str PERF_HEADER_ETA
+        self.PERF_CURRENT_ETA = None  # header of list rows done for info_thread
         self.kwargs = None
 
 
@@ -66,7 +66,6 @@ def all_worker_exit_msg(toolbox):
 
     toolbox.mp_output_q.put([toolbox.STOP_CONFIRM])  # essential msg for caller, count stop to exit
     toolbox.mp_print_q.put(f'\texit WORKER {toolbox.WORKER_ID}')
-    pass
 
 
 def mp_worker_entry(**kwargs):
@@ -116,18 +115,16 @@ def mp_worker_entry(**kwargs):
         worker = mod_fun_lst.pop()  # last but not least
 
     while 1:
-
         busy = worker(toolbox)  # until worker reads the iterator STOP msg
         if not busy:
-            if 'STOP_MSG_DISABLE' not in toolbox.kwargs or not toolbox.kwargs['STOP_MSG_DISABLE']:
-                all_worker_exit_msg(toolbox)  # stop msg in all queues, if not all loaded worker are threads
+            all_worker_exit_msg(toolbox)  # stop msg in all queues, if not all loaded worker are threads
             break
 
     while 1:
 
         msg_lst = toolbox.mp_process_q.get()  # loader keeps proc alive and awaits, 'stop_proc'
         if const.STOP_PROCESS in msg_lst:
-
+            # [baustelle] ask in wrk loop
             for q in toolbox.ALL_QUEUES_LIST:  # multiple qs feeder may stick if first sent the worker stop
                 if not q.empty():
                     q.get()

@@ -12,6 +12,8 @@ class Result:
         """Sort results yourself.
         If something is wrong, you see one TID is not there.
 
+        | Calculation: max generator / ROWS_MAX = num of tickets; 10_000 / 42 = 238.095 -> 238 lists with ticket numbers
+
         Tuple for simple extraction: id, result = result_dict['PRIME_NUM']
         {'PRIME_NUM': [(ticket_id, result_lst), (ticket_id, result_lst)]}
 

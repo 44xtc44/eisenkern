@@ -1,4 +1,4 @@
-"""eisenmp
+"""
 
 A Python ``multiprocess, multi CPU`` module.
 An example function cracks a game quest.
@@ -70,7 +70,7 @@ class Mp(QueueCollect):
         """
         kw = self.kwargs
         generator = kw['generator']  # no generator for run_q_feeder, crash for sure
-        num_rows = kw['NUM_ROWS'] if 'NUM_ROWS' in kw and kw['NUM_ROWS'] else const.NUM_ROWS  # processor workload
+        rows_max = kw['ROWS_MAX'] if 'ROWS_MAX' in kw and kw['ROWS_MAX'] else const.ROWS_MAX  # processor workload
         feeder_input_q = kw['input_q'] if 'input_q' in kw else self.mp_input_q  # use default if not specified
 
         result_key = ''  # key name where Queue is stored as value, need a name to distinguish results in result dict
@@ -86,7 +86,7 @@ class Mp(QueueCollect):
             if self.all_threads_stop:
                 break
             chunk_lst = create_transport_ticket(num_gen, result_key)
-            for _ in range(num_rows):
+            for _ in range(rows_max):
                 try:
                     chunk_lst.append(next(generator))
                 except StopIteration:

@@ -156,10 +156,10 @@ class QueueCollect(ProcEnv):
                     self.print_findings()
 
                     self.begin_proc_shutdown = True
-                    self.all_threads_stop = True
-
                     self.stop_proc()
                     self.end_proc()
+                    self.all_threads_stop = True
+
                     self.stop_thread()
                     self.end_thread()
 

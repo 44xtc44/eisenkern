@@ -25,7 +25,7 @@ class ProcEnv:
 
     def __init__(self):
         # CPU - process
-        self.NUM_PROCS = self.core_count_get()  # user override in mod
+        self.PROCS_MAX = self.core_count_get()  # user override in mod
         self.proc_list = []  # join processes at the end
         # Queues
         self.q_max_size = 1
@@ -44,7 +44,8 @@ class ProcEnv:
         self.queue_cust_dict_std = {}  # std dict, val is a q
         self.queue_cust_dict_cat = {}  # custom category, dict in dict
         self.q_lst = []  # all queues in a list, clean up; 'queue_lst_get'
-        self.q_name_id_lst = [('mp_input_q (default)', id(self.mp_input_q), self.mp_info_q)]  # tuple (name, id, q_ref)
+        # queue tuple (name, id, q_ref), all custom created queues will be appended
+        self.q_name_id_lst = [('mp_input_q (default)', id(self.mp_input_q), self.mp_input_q)]
 
         # Threads - Collect queue grabber
         self.thread_list = []
@@ -83,7 +84,6 @@ class ProcEnv:
                 self.queue_cust_dict_cat[cat] = {}
             self.queue_cust_dict_cat[cat].update(new_dct)
             self.q_name_id_lst.append((cat + '|' + name, id(new_dct[name]), new_dct[name]))
-            pass
 
     def queue_lst_get(self):
         """List of qs for shut down msg put in, of ...worker_loader.py
@@ -106,10 +106,10 @@ class ProcEnv:
         return int(num)
 
     def kwargs_env_update_custom(self, **kwargs):
-        """override default NUM_PROCS,
+        """override default PROCS_MAX,
         'queue_lst_get' for worker loader stop msg in all qs
         """
-        self.NUM_PROCS = kwargs['NUM_PROCS'] if 'NUM_PROCS' in kwargs and kwargs['NUM_PROCS'] else self.core_count_get()
+        self.PROCS_MAX = kwargs['PROCS_MAX'] if 'PROCS_MAX' in kwargs and kwargs['PROCS_MAX'] else self.core_count_get()
         kwargs.update(self.queue_std_dict)
         kwargs.update(self.queue_cust_dict_std)
         kwargs.update(self.queue_cust_dict_cat)
@@ -132,8 +132,8 @@ class ProcEnv:
         start_method = 'spawn' if 'START_METHOD' not in kwargs else kwargs['START_METHOD']
         mp.set_start_method(start_method, force=True)
 
-        print(f'\nCreate {self.NUM_PROCS} processes.')
-        for core in range(self.NUM_PROCS):
+        print(f'\nCreate {self.PROCS_MAX} processes.')
+        for core in range(self.PROCS_MAX):
             print(core, end=" ")
             # start_sequence_num always starts zero and is independent of sub-process spawn number
             start_sequence_num = {'START_SEQUENCE_NUM': core}  # worker in proc can grab a specific queue 0=red,1=blue
