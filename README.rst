@@ -31,7 +31,7 @@ execute **eisenmp_url** in Terminal to start the simpleHTTP Ajax server
 How it works
 ~~~~~~~~~~~~
 
-.. image:: ./_static/eisenmp_pic_generator.svg
+.. image:: ./docs/source/_static/eisenmp_pic_generator.svg
   :width: 640
   :alt: Generator, Iterator makes lists, result in dictionary
 
