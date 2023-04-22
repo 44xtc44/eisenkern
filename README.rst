@@ -29,11 +29,6 @@ execute **eisenmp_url** in Terminal to start the simpleHTTP Ajax server
 
 How it works
 ~~~~~~~~~~~~
-
-.. image:: ./docs/source/_static/eisenmp_pic_kwargs.svg
-  :width: 640
-  :alt: Generator, Iterator makes lists, result in dictionary
-
 You write two functions and two modules.
 Let's name them **Manager.py** and **Worker.py**.
 
@@ -48,6 +43,20 @@ Let's name them **Manager.py** and **Worker.py**.
 .. image:: ./docs/source/_static/eisenmp_pic_loader.svg
   :width: 640
   :alt: Worker module loader, loads independent, no imports of parent
+
+Variables transfer to worker
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The worker should be more flexible. Thus, it needs more structured information.
+
+* Information collector is the ``ModuleConfiguration`` class instance. The class can carry any name.
+* All instance attributes are stored in a dictionary __dict__. (self.foo will be kwargs.foo)
+* The instance dictionary is argument (`kwargs`) to call the eisenmp start method.
+* `Kwargs` is updated further with queue information and the START_SEQUENCE_NUM of the process, before process start.
+
+.. image:: ./docs/source/_static/eisenmp_pic_kwargs.svg
+  :width: 640
+  :alt: Generator, Iterator makes lists, result in dictionary
+
 
 Default ``six Queues``
 
