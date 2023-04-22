@@ -1,19 +1,52 @@
 Details
 =======
 
+Structure
+~~~~~~~~~~
+| Designed with regard to a clear separation between manager and worker module.
+
+Worker
+
+* does only the specific task
+
+Manager
+
+* configures the amount of result output
+* assign groups, lists, queues
+* configures the performance with CPU count and workload
+
+Variables transfer to worker
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The worker should be more flexible. Thus, it needs more structured information.
+
+* Information collector is the ``ModuleConfiguration`` class instance. The class can carry any name.
+* All instance attributes are stored in a dictionary __dict__. (self.foo will be kwargs.foo)
+* The instance dictionary is argument (`kwargs`) to call the eisenmp start method.
+* `Kwargs` is updated further with queue information and the START_SEQUENCE_NUM of the process, before process start.
+
+.. image:: ./_static/eisenmp_pic_kwargs.svg
+  :width: 640
+  :alt: Generator, Iterator makes lists, result in dictionary
+
+
+
 Generator - iterator chunks on every CPU core
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 `Generator yield <https://docs.python.org/3/reference/expressions.html#yieldexpr>`_
 or
 `expression <https://peps.python.org/pep-0289/>`_
 
-output 1, 2, 3, 4, 5 ➜ eisenmp iterator list [ [1,2] [3,4] [5] ] ➜ **NUM_ROWS** chunks for your Worker
+output 1, 2, 3, 4, 5 ➜ eisenmp iterator list [ [1,2] [3,4] [5] ] ➜ **ROWS_MAX** chunks for your Worker
 
 - (A) Mngr(): Import and instantiate **eisenmp**. Register the worker in (also) a list.
 - (B) Mngr(): Assign Worker load and process count.
 - (C) Mngr(): Call **iterator** run_q_feeder(generator=Mngr generator)
-- (D) Wkr(): Loop over **NUM_ROWS** list chunks. Return False to **auto exit worker and process**, or get next chunk
+- (D) Wkr(): Loop over **ROWS_MAX** list chunks. Return False to **auto exit worker and process**, or get next chunk
+
+.. image:: ./_static/eisenmp_pic_generator.svg
+  :width: 640
+  :alt: Generator, Iterator makes lists, result in dictionary
+
 
 ::
 
@@ -21,6 +54,7 @@ output 1, 2, 3, 4, 5 ➜ eisenmp iterator list [ [1,2] [3,4] [5] ] ➜ **NUM_ROW
         """
         - WORKER - Called in a loop.
         """
+        audio_chunk_lst, video_chunk_lst = None, None
         audio_chunk_lst, video_chunk_lst = None, None
         if not toolbox.WORKER_ID % 2:  # mod is 1 odd (see also constant START_SEQUENCE_NUM)
             audio_chunk_lst = batch_1_audio_get(toolbox)
@@ -41,7 +75,6 @@ or get the `PyPi package <https://pypi.org/project/eisenmp-examples/>`_
 
 One Server (or more) on every CPU core
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 - (A) Mngr(): Import and instantiate **eisenmp**. Register the worker module in a list.
 - (D.1) Wkr(): The **worker** starts **ONE** server, blocks (run_forever on IP: foo port: 42) and serves whatever
 - (D.2) Wkr(): The **worker** starts **MANY** server. Server start call must be threaded
@@ -63,7 +96,6 @@ or get the `PyPi package <https://pypi.org/project/eisenmp-examples/>`_
 
 Port groups
 ~~~~~~~~~~~
-
 * Map **START_SEQUENCE_NUM** ➜ to server ports on CPU cores ➜ to an IP address
 
 .. image:: /_static/eisenmp_pic_port_groups.svg
@@ -91,7 +123,6 @@ or get the `PyPi package <https://pypi.org/project/eisenmp-examples/>`_
 
 serial number header
 ~~~~~~~~~~~~~~~~~~~~~
-
 - **run_q_feeder()** iterator lists get a **serial number** header to recreate the original order of chunks
 
 ::
@@ -120,13 +151,9 @@ You can validate the result ticket id numbers if generator count is known.
 
 Results
 ~~~~~~~~
-
 - Output **can** be stored if **RESULTS_STORE** is set in config
 
-tools
-~~~~~~
-
-- **mp_tools_q** for big tools stuff delivery to every single Worker proc module
-
-It may be a 27GB rainbow table; See the bruteforce (small) example, please
-
+Tools Queue
+~~~~~~~~~~~~
+| Makes sense if you assign a *Tool* to one group of processes but not to the other.
+| This would be the case if you build a pipeline.

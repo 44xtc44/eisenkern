@@ -16,8 +16,7 @@ Features:
 * **module_loader** decouples your Worker imports from Main()
 * **Categories of Queues**, assign Queues groups to Workers groups, use them in **ToolBox** dictionary (kwargs)
 * **Queue list** helps to debug your setup and reveals the name, object id and object reference of every Queue
-* **Tools Queue** is ready for a Bruteforce Attack setup
-* **Print Queue** allows formatted print output for your processes (blocks)
+* **Print Queue** allows formatted print to screen for your processes (blocks)
 * No libraries, (Linux, Windows)
 
 | Visit the features above in the `Examples gitHub repository <https://github.com/44xtc44/eisenmp_examples>`_
@@ -31,10 +30,6 @@ execute **eisenmp_url** in Terminal to start the simpleHTTP Ajax server
 How it works
 ~~~~~~~~~~~~
 
-.. image:: ./_static/eisenmp_pic_generator.svg
-  :width: 640
-  :alt: Generator, Iterator makes lists, result in dictionary
-
 You write two functions and two modules.
 Let's name them **Manager.py** and **Worker.py**.
 
@@ -45,6 +40,10 @@ Let's name them **Manager.py** and **Worker.py**.
 5. **module_loader** module then puts a STOP Worker message in all other input queues.
 6. **Next** Worker reads STOP, exit ...
 7. Loader runs idle and awaits the internal STOP Process message.
+
+.. image:: ./_static/eisenmp_pic_loader.svg
+  :width: 640
+  :alt: Worker module loader, loads independent, no imports of parent
 
 Default ``six Queues``
 

@@ -1,8 +1,11 @@
 Manager
 #######
 
-| Ease Bruteforce attacks.
-| Use of all CPU cores on Android devices with Python .so modules.
+eisenmp needs information about process count, each process workload and start method.
+
+| A ``ModuleConfiguration`` class is used to collect information, variables and data for the worker module.
+| A class instance for :ref:`Worker data variables` is created to store all the information and make it
+| also available within the manager module.
 
 You feed:
 
@@ -24,8 +27,8 @@ Generator
 Queue creation methods
 ~~~~~~~~~~~~~~~~~~~~~~
 | Eases the creation and debugging of multiple queues.
-| Standard Queue name: ``queue_cust_dict_std_create``
-| Category plus Queue name: ``queue_cust_dict_category_create``
+| Standard Queue name: ``queue_cust_dict_std_create`` method
+| Category plus Queue name: ``queue_cust_dict_category_create`` method
 
 ::
 
@@ -40,8 +43,9 @@ Queue creation methods
 
 Queue list
 ----------
+Helps to debug Queue access.
 
-| Find Queues in ``q_name_id_lst`` list. Find queue names via object id, object reference or vice versa.
+| View in Manager: queue names via object id, object reference or vice versa.
 
 ::
 
@@ -51,29 +55,35 @@ Queue list
     # queue tuple (name, id, q_ref), all custom created queues will be appended
     self.q_name_id_lst = [('mp_input_q (default)', id(self.mp_input_q), self.mp_input_q)]
 
-kwargs
-~~~~~~~~~~~
+| View in Worker: Queues in ``toolbox.Q_NAME_ID_LST`` list. Where `toolbox` is your default worker argument name.
 
-| eisenmp heavily uses kwargs dictionary as a container (worker toolbox).
-| Custom variables, lists, objects created in the modConf instance are available for the worker module.
+::
 
-
-Which information needs eisenmp?
-********************************
-
-eisenmp needs information about process count, each process workload and start method.
-
-| A ``ModuleConfiguration`` class is used to collect information, variables and data for the worker module.
-| A class instance for :ref:`Worker data variables` is created to store all the information and make it
-| also available within the manager module.
+    ('mp_input_q (default)', 2863011365072, <multiprocessing.queues.Queue object at 0x0000020E0F9252D0>)
+    ('batch_1|audio_lg', 2863011368192, <multiprocessing.queues.Queue object at 0x0000020E0FD26D10>)
+    ('batch_1|video_in', 2863011368240, <multiprocessing.queues.Queue object at 0x0000020E0FD27040>)
+    ('batch_7|audio_lg', 2863011368576, <multiprocessing.queues.Queue object at 0x0000020E0FD27370>)
+    ('batch_7|video_in', 2863011368912, <multiprocessing.queues.Queue object at 0x0000020E0FD276A0>)
 
 Worker Loader
 ~~~~~~~~~~~~~
 
-| eisenmp worker module loader list reveals the modules to load. Can load independent from Main() and multiple modules.
-| Modules are collected in a `worker_modules` list. Load order is (LIFO) last in first out.
-| First worker module is loaded last and is allowed to block the loader loop.
-| All other modules must start threaded.
+eisenmp worker module loader list reveals the modules to load.
+
+.. note::
+    Loads independent. No imports of Main() module in the worker. No ``interesting behaviour``.
+
+
+
+* All modules to start are collected in a `worker_modules` list. Load order is (LIFO) last in first out.
+* First worker module is loaded last and is allowed to block the loader loop. *Block:* *kill()* processes yourself.
+
+::
+
+    for process in emp.proc_list:
+        process.kill()
+
+Second to last module *must* use a threaded start.
 
 ::
 
@@ -96,16 +106,29 @@ Worker Loader
             ]
 
 
+kwargs
+~~~~~~~~~~~
+
+| eisenmp uses kwargs dictionary as a container (worker toolbox).
+| Custom variables, lists, objects created in the modConf instance are available for the worker module.
+| kwargs is updated with all Queue information and the current process Start ID ``toolbox.kwargs['START_SEQUENCE_NUM']``
+
+.. note::
+    *spawn* process start method makes *copies* of all variables and data structures in kwargs.
+    Means, if you assign a 8 GB dictionary in the parent process to kwargs, each child process will allocate 8 GB.
+
+You should further read about *pickling* and *spawn*. Instances are copied and recreated at a new start (offset)
+address. The same seems to be the case for all other data in kwargs and Queue delivery.
+
+
 Worker data variables
 ~~~~~~~~~~~~~~~~~~~~~
 
-| Default process start method is `spawn`. You can only read parent process values, you have preserved in kwargs.
-| `spawn` means all references of in-build datatypes are lost in the child process.
+| Default process start method is `spawn`. You can only read parent process values.
+| `spawn` means all references of in-build datatypes are lost in the child process. Updates into the void.
 | The offset start address pointer of the parent object is not accessible in the child.
-
-| `spawn` reading 3rd party API lists and dictionaries is ok. Updating is possible *but* you update a black hole.
-| Use Module communication sparingly and directly via pipes or a (SQLite) database. Python shared manager is utter slow.
-
+| `spawn` means also 3rd party module communication APIs are broken.
+| Use Process communication via pipes or a (SQLite) database. Python shared manager is slow.
 
 ::
 
@@ -130,10 +153,14 @@ Worker data variables
     modConf = ModuleConfiguration()  # Accessible in the manager and worker module.
 
 
-eisenmp Instance
-~~~~~~~~~~~~~~~~
+eisenmp Instance update and process start
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-``modConf`` instance dictionary is dumped into eisenmp. Means ``all attributes will be keys`` in kwargs.
+1. instantiate ``eisenmp``
+2. ``modConf`` instance dictionary is dumped into eisenmp, ``all attributes will be keys`` in kwargs.
+3. eisenmp updates kwargs dictionary further with ``custom created queues`` and ``process start id``
+4. Processes started, worker in process is blocked - queue input not yet available
+5. eisenmp Queue feeder threads started; or your own
 
 ::
 
