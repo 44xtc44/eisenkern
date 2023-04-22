@@ -3,7 +3,7 @@
 A Python ``multiprocess, multi CPU`` module.
 An example function cracks a game quest.
 
-    ::
+::
 
     Inheritance - proc: ProcEnv -> QueueCollect -> Mp
         Create Queue/Process -> Collect messages in boxes -> Manage, feed queues
@@ -51,8 +51,6 @@ class Mp(QueueCollect):
         """"""
         self.all_threads_stop = False  # frequent calls without exit, see bruteforce
         self.begin_proc_shutdown = False  # frequent calls without exit, see bruteforce
-        if len(e_utils.Result.result_dict):
-            e_utils.Result.result_dict = {}
 
     def run_q_feeder(self, **kwargs):
         """Threaded instance, run multiple q_feeder, called by manager of worker

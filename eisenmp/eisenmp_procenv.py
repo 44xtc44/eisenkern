@@ -113,7 +113,8 @@ class ProcEnv:
         kwargs.update(self.queue_std_dict)
         kwargs.update(self.queue_cust_dict_std)
         kwargs.update(self.queue_cust_dict_cat)
-        all_qs_dict = {const.ALL_QUEUES_LIST: self.queue_lst_get()}  # view q name,id,ref in debugger: 'q_name_id_lst'
+        all_qs_dict = {const.ALL_QUEUES_LIST: self.queue_lst_get(),
+                       'Q_NAME_ID_LST': self.q_name_id_lst}  # view q name,id,ref in debugger: 'q_name_id_lst'
         kwargs.update(all_qs_dict)
         return kwargs
 

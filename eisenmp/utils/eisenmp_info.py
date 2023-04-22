@@ -5,10 +5,10 @@ import eisenmp.utils.eisenmp_constants as constants
 
 
 class ProcInfo(threading.Thread):
-    """Thread; start(), cancel()
+    """Thread start() cancel()
     Brute Force uses factorial as target to calculate.
     Prime uses 'range_num' of num generator as target.
-        List rows done are the current state
+    List rows done are the current state
     estimated time of arrival, ETA.
     So far.
 
