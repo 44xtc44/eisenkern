@@ -45,7 +45,7 @@ Let's name them **Manager.py** and **Worker.py**.
 6. **Next** Worker reads STOP, exit ...
 7. Loader runs idle and awaits the internal STOP Process message.
 
-.. image:: ./_static/eisenmp_pic_loader.svg
+.. image:: ./docs/source/_static/eisenmp_pic_loader.svg
   :width: 640
   :alt: Worker module loader, loads independent, no imports of parent
 
