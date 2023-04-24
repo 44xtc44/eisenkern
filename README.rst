@@ -1,6 +1,8 @@
 Introduction
 ############
 
+[![Tests](https://github.com/44xtc44/eisenmp/actions/workflows/tests.yml/badge.svg)]
+(https://github.com/44xtc44/eisenmp/actions/workflows/tests.yml)
 Python 3.7
 
 `Multiprocessor <https://en.wikipedia.org/wiki/Multiprocessing>`_
