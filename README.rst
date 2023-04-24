@@ -48,6 +48,13 @@ Let's name them **Manager.py** and **Worker.py**.
   :width: 640
   :alt: Worker module loader, loads independent, no imports of parent
 
+Generators
+~~~~~~~~~~~
+
+.. image:: ./docs/source/_static/eisenmp_pic_generator.svg
+  :width: 640
+  :alt: Generator, iterator, lists with name and ID header
+
 Variables transfer to worker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The worker should be more flexible. Thus, it needs more structured information.
