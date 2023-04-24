@@ -1,7 +1,7 @@
 Introduction
 ############
 
-.. |Tests| image:: https://github.com/44xtc44/eisenmp/actions/workflows/tests.yml/badge.svg
+.. image:: https://github.com/44xtc44/eisenmp/actions/workflows/tests.yml/badge.svg
    :target: https://github.com/44xtc44/eisenmp/actions/workflows/tests.yml
 
 
