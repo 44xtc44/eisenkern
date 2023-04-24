@@ -1,5 +1,3 @@
-![Tests](https://github.com/44xtc44/eisenmp/actions/workflows/tests.yml/badge.svg?branch=dev)
-
 Introduction
 ############
 
