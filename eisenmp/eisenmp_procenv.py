@@ -66,7 +66,7 @@ class ProcEnv:
     def queue_name_avail_get(self, name):
         """"""
         for tup in self.q_name_id_lst:
-            if name in tup[0]:
+            if name == tup[0]:
                 raise ValueError(f'eisenmp: Queue {name} already exists in ProcEnv.q_name_id_lst')
         return True
 
