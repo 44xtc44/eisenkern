@@ -28,17 +28,27 @@ Queue creation methods
 ~~~~~~~~~~~~~~~~~~~~~~
 | Eases the creation and debugging of multiple queues.
 | Standard Queue name: ``queue_cust_dict_std_create`` method
-| Category plus Queue name: ``queue_cust_dict_category_create`` method
 
 ::
 
     blue_q_7_max_3 = ('blue_q_7', 3)
+    emp.queue_cust_dict_std_create(blue_q_7_max_3)
+
+    three_q_lst = [('orange_q_2', 2), ('cyan_q_4', 4), ('black_q_5', 5)]
     # simple: q_name and q_maxsize as unpacked list
-    emp.queue_cust_dict_std_create(*blue_q_7_max_3)
+    emp.queue_cust_dict_std_create(*three_q_lst)
+
+| Category plus Queue name: ``queue_cust_dict_category_create`` method
+| Queue name is **category|queue_name** batch_1|audio_lg
+
+::
 
     cat_1_input_q_3_max_10 = ('category_1', 'input_q_3', 10)
-    # category plus name: q_category, q_name and q_maxsize as unpacked list
-    emp.queue_cust_dict_category_create(*cat_1_input_q_3_max_10)
+    emp.queue_cust_dict_category_create(cat_1_input_q_3_max_10)
+
+    three_q_lst = [('batch_1', 'orange_q_2', 2), ('batch_1', 'cyan_q_4', 4), ('batch_1', 'black_q_5', 5)]
+    # category: q_category, q_name and q_maxsize as unpacked list
+    emp.queue_cust_dict_category_create(*three_q_lst)
 
 
 Queue list
