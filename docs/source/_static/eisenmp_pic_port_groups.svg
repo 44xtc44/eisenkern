@@ -24,9 +24,9 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="0.22273864"
-     inkscape:cx="994.43906"
-     inkscape:cy="271.6188"
+     inkscape:zoom="0.31500001"
+     inkscape:cx="795.23808"
+     inkscape:cy="1592.0635"
      inkscape:current-layer="layer2"
      showguides="false" /><defs
      id="defs2"><rect
@@ -1704,7 +1704,7 @@
          id="tspan4265"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:19.9335px;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:5.29167"
          x="19.715836"
-         y="509.31738">192.0.0.1</tspan></text><text
+         y="509.31738">192.168.0.1</tspan></text><text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:19.9335px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:5.29167;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-dashoffset:20.0013"
        x="142.75438"
@@ -1715,7 +1715,7 @@
          id="tspan4371"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:19.9335px;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:5.29167"
          x="142.75438"
-         y="509.31738">192.0.0.3</tspan></text><text
+         y="509.31738">192.168.0.3</tspan></text><text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:13.8837px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:5.29167;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-dashoffset:20.0013"
        x="296.496"
