@@ -1,7 +1,6 @@
 import threading
 import contextlib
 import multiprocessing
-import time
 
 import eisenmp.utils.eisenmp_utils as e_utils
 import eisenmp.utils.eisenmp_constants as const
