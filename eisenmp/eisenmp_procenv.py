@@ -86,7 +86,7 @@ class ProcEnv:
         """('category_1', 'input_q_3', 10)
         """
         for cat, name, maxsize in queue_cat_name_maxsize:
-            self.queue_name_avail_get(name)
+            self.queue_name_avail_get(cat + '|' + name)
 
             new_dct = {name: Queue(maxsize=maxsize)}
             if cat not in self.queue_cust_dict_cat:

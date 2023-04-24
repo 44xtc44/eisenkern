@@ -45,6 +45,7 @@ class TestProcEnv(unittest.TestCase):
         three_q_lst = [('batch_1', 'orange_q_2', 2), ('batch_1', 'cyan_q_4', 4), ('batch_1', 'black_q_5', 5)]
         # category: q_category, q_name and q_maxsize as unpacked list
         emp.queue_cust_dict_category_create(*three_q_lst)
+        print(emp.q_name_id_lst)
 
         assert len(emp.q_name_id_lst) == 5  # two_q_lst was rejected
 
