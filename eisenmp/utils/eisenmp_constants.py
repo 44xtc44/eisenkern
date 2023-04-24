@@ -28,8 +28,6 @@
     | **INPUT_HEADER** should be the input queue name, ident queue result if multiple queues are used on one output
     | **PERF_HEADER_ETA**  str PERF_HEADER_ETA
     | **PERF_CURRENT_ETA**  header of list rows done for info_thread
-    
-    * plus constants names mentioned below
 
 """
 
