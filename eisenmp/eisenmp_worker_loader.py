@@ -32,7 +32,7 @@ class ToolBox:
         self.WORKER_NAME = None  # process name
         self.MULTI_TOOL = None  # tools_q, can be any prerequisite object for a module (made for bruteforce attacks)
         self.STOP_MSG = None  # not mp_print_q, ...worker_loader in one process informs other processes about stop
-        self.STOP_CONFIRM = ''  # output_q_box thread gets worker messages, send exit messages to now idle processes
+        self.STOP_CONFIRM_AND_PROCNAME = ''  # output_q_box thread gets worker messages, stop and results
         self.OUTPUT_HEADER = ''  # identify proc result in output_q_box
         self.INPUT_HEADER = ''  # ident proc result output_q_box (not stop msg) and copy result to result[INPUT_HEADER]
         self.PERF_HEADER_ETA = None  # str PERF_HEADER_ETA
@@ -64,7 +64,7 @@ def all_worker_exit_msg(toolbox):
         if q.empty():
             q.put(stop_token_lst)
 
-    toolbox.mp_output_q.put([toolbox.STOP_CONFIRM])  # essential msg for caller, count stop to exit
+    toolbox.mp_output_q.put([toolbox.STOP_CONFIRM_AND_PROCNAME])  # essential msg for caller, count stop to exit
     toolbox.mp_print_q.put(f'\texit WORKER {toolbox.WORKER_ID}')
 
 
@@ -85,13 +85,18 @@ def mp_worker_entry(**kwargs):
     tool_box[name].WORKER_PID = int(os.getpid())
     tool_box[name].WORKER_NAME = name
     tool_box[name].STOP_MSG = const.STOP_MSG
-    tool_box[name].STOP_CONFIRM = const.STOP_CONFIRM + name
+    tool_box[name].STOP_CONFIRM_AND_PROCNAME = const.STOP_CONFIRM + name
     tool_box[name].OUTPUT_HEADER = const.OUTPUT_HEADER
     tool_box[name].PERF_HEADER_ETA = const.PERF_HEADER_ETA  # performance list header for ProcInfo
     tool_box[name].PERF_CURRENT_ETA = None
     tool_box[name].kwargs = kwargs
 
     toolbox = tool_box[name]  # use normal instance like
+
+    if 'worker_modules' not in kwargs:  # need mp_print_q
+        msg = 'worker_loader: No Worker Module to start - exit function'
+        toolbox.mp_print_q.put(msg)
+        raise Exception(msg)
 
     # Module Loader
     mod_fun_lst = []
