@@ -63,6 +63,13 @@ class ProcEnv:
         # update
         self.kwargs_env = {}
 
+    def queue_name_avail_get(self, name):
+        """"""
+        for tup in self.q_name_id_lst:
+            if name in tup[0]:
+                raise ValueError(f'eisenmp: Queue {name} already exists in ProcEnv.q_name_id_lst')
+        return True
+
     def queue_cust_dict_std_create(self, *queue_name_maxsize: tuple):
         """create q, name and maxsize as unpacked list ('blue_q_7', 7)
         - Two queue creator functions. All use tuple to ease unpacking.
@@ -71,14 +78,16 @@ class ProcEnv:
         'queue_cust_dict_category_create' - > 'queue_cust_dict_cat'
         """
         for name, maxsize in queue_name_maxsize:
+            self.queue_name_avail_get(name)
             self.queue_cust_dict_std[name] = Queue(maxsize=maxsize)
             self.q_name_id_lst.append((name, id(self.queue_cust_dict_std[name]), self.queue_cust_dict_std[name]))
-            pass
 
     def queue_cust_dict_category_create(self, *queue_cat_name_maxsize: tuple):
         """('category_1', 'input_q_3', 10)
         """
         for cat, name, maxsize in queue_cat_name_maxsize:
+            self.queue_name_avail_get(name)
+
             new_dct = {name: Queue(maxsize=maxsize)}
             if cat not in self.queue_cust_dict_cat:
                 self.queue_cust_dict_cat[cat] = {}
@@ -128,7 +137,6 @@ class ProcEnv:
         :params: target=loader: the worker_loader module is loaded and keeps the process alive
         """
         kwargs = self.kwargs_env_update_custom(**kwargs)
-        self.kwargs_env.update(kwargs)  # eat kwargs
 
         start_method = 'spawn' if 'START_METHOD' not in kwargs else kwargs['START_METHOD']
         mp.set_start_method(start_method, force=True)
@@ -139,6 +147,7 @@ class ProcEnv:
             # start_sequence_num always starts zero and is independent of sub-process spawn number
             start_sequence_num = {'START_SEQUENCE_NUM': core}  # worker in proc can grab a specific queue 0=red,1=blue
             kwargs.update(start_sequence_num)
+            self.kwargs_env.update(kwargs)  # pytest kwargs
 
             proc = mp.Process(target=loader.mp_worker_entry,
                               kwargs=kwargs)
