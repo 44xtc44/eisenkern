@@ -64,14 +64,11 @@ class ProcInfo(threading.Thread):
                 if type(info_box[idx]) is list:
 
                     list_header = info_box[idx][0]
-                    if list_header[:14] == constants.PERF_HEADER_ETA:
+                    if list_header[:15] == constants.PERF_HEADER_ETA:
                         a_num = int(info_box[idx][1])
                         if self.INFO_THREAD_MAX:
                             self.perf_dict_eta['target'] = self.INFO_THREAD_MAX
-                            if self.info_td_exec:
-                                exec(self.info_td_exec)
-                            else:
-                                self.perf_dict_eta['rows_done'] += a_num  # ETA
+                            self.perf_dict_eta['rows_done'] += a_num  # ETA
                         info_box[idx] = None
 
     def perf_count_print_eta(self):
@@ -100,7 +97,7 @@ class ProcInfo(threading.Thread):
         while not self.info_shutdown:  # self.perf_dict_eta['rows_done']
             self.perf_count_eta(info_box)
             self.perf_count_print_eta()
-            for _ in range(40):
+            for _ in range(30):
                 if self.info_shutdown:
                     return
                 time.sleep(.1)
