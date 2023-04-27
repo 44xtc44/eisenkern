@@ -68,13 +68,9 @@ def all_worker_exit_msg(toolbox):
     toolbox.mp_print_q.put(f'\texit WORKER {toolbox.WORKER_ID}')
 
 
-def mp_worker_entry(**kwargs):
-    """Entry.
-    We are 'disconnected' from parent process now.
-    Only Queue communication. Threads can exec() 'string' commands.
-    All references are dead. Variables ok. We read only, here.
+def toolbox_enable(**kwargs):
+    """Populate Toolbox class attributes for the worker to use.
     """
-    worker = None
     # assembled vars and names
     name = mp.process.current_process().name
     proc_id = name.split('-')
@@ -92,13 +88,12 @@ def mp_worker_entry(**kwargs):
     tool_box[name].kwargs = kwargs
 
     toolbox = tool_box[name]  # use normal instance like
+    return toolbox
 
-    if 'worker_modules' not in kwargs:  # need mp_print_q
-        msg = 'worker_loader: No Worker Module to start - exit function'
-        toolbox.mp_print_q.put(msg)
-        raise Exception(msg)
 
-    # Module Loader
+def module_loader(**kwargs):
+    """Modules loaded and function call stored as a reference in a list.
+    """
     mod_fun_lst = []
     for row in kwargs['worker_modules']:
         if len(row):
@@ -108,8 +103,16 @@ def mp_worker_entry(**kwargs):
             worker_mod = module_path_load(worker_path)  # str path to -> imported module now available
             fun_ref_exec = getattr(worker_mod, worker_ref)  # reference: can make function call now
             mod_fun_lst.append(fun_ref_exec)
+    return mod_fun_lst
 
-    # Function executor
+
+def function_executor(toolbox, mod_fun_lst):
+    """Worker execution in loop, all other functions must start threaded.
+
+    :params: toolbox: kwargs
+    :params: mod_fun_lst: list with function references to execute
+    """
+    worker = None
     if len(mod_fun_lst):
         mod_fun_len = len(mod_fun_lst)
 
@@ -117,20 +120,30 @@ def mp_worker_entry(**kwargs):
             if len(mod_fun_lst) >= 2:
                 mate_fun = mod_fun_lst.pop()
                 mate_fun(toolbox)
-        worker = mod_fun_lst.pop()  # last but not least
+        worker = mod_fun_lst.pop()
+    return worker
+
+
+def mp_worker_entry(**kwargs):
+    """Entry.
+    We are 'disconnected' from parent process now.
+    Only Queue communication. Threads can exec() 'string' commands.
+    All references are dead. Variables ok. We read only, here.
+
+    The worker can loop itself and grab a new list from queue; while loop.
+    """
+    toolbox = toolbox_enable(**kwargs)
+
+    if 'worker_modules' not in kwargs or not len(kwargs['worker_modules']):
+        msg = '\n\teisenmp worker_loader: No Worker Module to start - exit process\n'
+        toolbox.mp_print_q.put(msg)
+        return
+
+    mod_fun_lst = module_loader(**kwargs)
+    worker = function_executor(toolbox, mod_fun_lst)
 
     while 1:
         busy = worker(toolbox)  # until worker reads the iterator STOP msg
         if not busy:
             all_worker_exit_msg(toolbox)  # stop msg in all queues, if not all loaded worker are threads
-            break
-
-    while 1:
-
-        msg_lst = toolbox.mp_process_q.get()  # loader keeps proc alive and awaits, 'stop_proc'
-        if const.STOP_PROCESS in msg_lst:
-            # [baustelle] ask in wrk loop
-            for q in toolbox.ALL_QUEUES_LIST:  # multiple qs feeder may stick if first sent the worker stop
-                if not q.empty():
-                    q.get()
             break
