@@ -6,8 +6,31 @@ import eisenmp
 import eisenmp.eisenmp_worker_loader as loader
 
 
+class ModuleConfiguration:  # name your own class and feed eisenmp with the dict
+    """
+    """
+    dir_name = os.path.dirname(__file__)
+    test_module = {
+        'WORKER_PATH': os.path.join(dir_name, 'test_loader.py'),
+        'WORKER_REF': 'worker_entrance'
+    }
+
+    def __init__(self):
+
+        self.worker_modules = [  # in-bld-res
+            self.test_module,  # other modules must start threaded, else we hang
+            # self.watchdog_module  # second; thread function call mandatory, last module loaded first
+        ]
+
+        # Multiprocess vars - override default
+        self.PROCS_MAX = 2  # your process count, each 'batch' on one CPU core, default is None: one proc/CPU core
+
+
+modConf = ModuleConfiguration()  # Accessible in the module
+
+
 class TestLoader(unittest.TestCase):
-    """ https://pytest-mock.readthedocs.io/en/latest/usage.html
+    """
     """
     @staticmethod
     def my_isfile(filename):
@@ -27,7 +50,7 @@ class TestLoader(unittest.TestCase):
         assert self.my_isfile('foo') == 'Yes'
 
     @mock.patch('eisenmp.eisenmp_worker_loader.mp')   # attempt to mock whole module, import multiprocessing as mp
-    def test_mp_worker_entry_fail_no_worker_module_loaded(self, mp):
+    def test_mp_worker_entry_process_name(self, mp):
         """fails for current Main()
         assert multiprocessing.process.current_process().name == 'Process-42'
         'MainProcess' != 'Process-42'
@@ -36,14 +59,6 @@ class TestLoader(unittest.TestCase):
         """
         mp.process.current_process().name = 'Process-42'  # to feed toolbox.WORKER_ID
         assert eisenmp.eisenmp_worker_loader.mp.process.current_process().name == 'Process-42'
-
-        emp = eisenmp.Mp()
-        emp.run_proc()  # start queues, kwargs_env -> see test_procenv.test_run_proc description
-        emp.enable_q_box_threads()  # init queue grabber threads, out and print
-        try:
-            loader.mp_worker_entry(**emp.kwargs_env)  # ProcEnv.kwargs_env is to preserve volatile kwargs for tests
-        except Exception as e:
-            print(e)
 
     def test_toolbox_class(self):
         """
@@ -69,3 +84,19 @@ class TestLoader(unittest.TestCase):
         assert toolbox.PERF_HEADER_ETA is None  # str PERF_HEADER_ETA
         assert toolbox.PERF_CURRENT_ETA is None  # header of list rows done for info_thread
         assert toolbox.kwargs is None
+
+    def test_loader(self):
+        """No queue grabber start, we do get().
+        """
+        emp = eisenmp.Mp()
+        emp.run_proc(**modConf.__dict__)
+        emp.enable_q_box_threads()
+        msg = emp.mp_info_q.get()
+        assert msg == 'foo'
+
+
+def worker_entrance(toolbox):
+    """Print msg to show module is loaded.
+    """
+    toolbox.mp_info_q.put('foo')
+    return False
