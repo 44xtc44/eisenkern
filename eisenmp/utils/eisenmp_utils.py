@@ -9,7 +9,7 @@ class Result:
     result_dict = {}
 
     def result_dict_update(self, key: str, id_result: tuple) -> None:
-        """Sort results yourself.
+        """Results are sorted through the TID number. Key in the dictionary.
         If something is wrong, you see one TID is not there.
 
         | Calculation: max generator / ROWS_MAX = num of tickets; 10_000 / 42 = 238.095 -> 238 lists with ticket numbers
@@ -41,7 +41,7 @@ def thread_shutdown_wait(*threads):
     """We return if none of the thread names are listed anymore.
     Blocks!
 
-    :params: *threads: arbitrary list of thread names
+    :params: threads: arbitrary list of thread names
     """
     busy = True
     while busy:
