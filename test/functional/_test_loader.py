@@ -12,7 +12,7 @@ class ModuleConfiguration:  # name your own class and feed eisenmp with the dict
     """
     dir_name = os.path.dirname(__file__)
     test_module = {
-        'WORKER_PATH': os.path.join(dir_name, 'test_loader.py'),
+        'WORKER_PATH': os.path.join(dir_name, '_test_loader.py'),
         'WORKER_REF': 'worker_entrance'
     }
 
