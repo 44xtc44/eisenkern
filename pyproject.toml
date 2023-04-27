@@ -17,6 +17,7 @@ classifiers = [
     "Development Status :: 5 - Production/Stable"
 ]
 dependencies = [
+    "pip install ."
 ]
 
 [project.scripts]
@@ -28,7 +29,5 @@ repository = "https://github.com/44xtc44/eisenmp"
 
 [tool.pytest.ini_options]
 addopts = "--cov=."
-testpaths = "."
-pythonpath = [
-  "."
-]
+testpaths = ["."]
+pythonpath = ["."]
