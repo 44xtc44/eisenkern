@@ -45,7 +45,6 @@ class TestProcEnv(unittest.TestCase):
         three_q_lst = [('batch_1', 'orange_q_2', 2), ('batch_1', 'cyan_q_4', 4), ('batch_1', 'black_q_5', 5)]
         # category: q_category, q_name and q_maxsize as unpacked list
         emp.queue_cust_dict_category_create(*three_q_lst)
-        print(emp.q_name_id_lst)
 
         assert len(emp.q_name_id_lst) == 5  # two_q_lst was rejected
 
@@ -75,6 +74,15 @@ class TestProcEnv(unittest.TestCase):
         # {key: proc start, value overwritten until core_count}
         assert emp.kwargs_env['START_SEQUENCE_NUM'] == core_count - 1  # core_count starts zero
 
+        # 'seems' to be reason for GitHub actions fails; eisenmp_OutputQThread active
+        for proc in emp.proc_list:
+            proc.terminate()
+            proc.kill()
+            proc.join()
+        for t in emp.thread_list:
+            t.cancel()
+            t.join()
+
     @staticmethod
     def coverage_fails_test_run_proc_wait_fail_worker_loader():  # pragma: no cover
         """Coverage fails to assign no cover attribute and breaks the test
@@ -100,6 +108,3 @@ class TestProcEnv(unittest.TestCase):
                 break
             if len(emp.print_q_box) >= core_count:  # pragma: no cover
                 break
-
-        print(len(emp.print_q_box))
-        print(emp.print_q_box)
