@@ -132,12 +132,11 @@ class QueueCollect(ProcEnv):
         while 1:
             if self.all_threads_stop:
                 break
-            if not self.mp_output_q.empty():
-                worker_output = self.mp_output_q.get()
-                serial_num = next(generator)
-                self.output_q_box[serial_num] = worker_output
-                is_STOP_MSG = self.output_q_search_stop_confirm(serial_num)
-                self.output_q_box_view_results(serial_num) if not is_STOP_MSG else None
+            worker_output = self.mp_output_q.get()
+            serial_num = next(generator)
+            self.output_q_box[serial_num] = worker_output
+            is_STOP_MSG = self.output_q_search_stop_confirm(serial_num)
+            self.output_q_box_view_results(serial_num) if not is_STOP_MSG else None
 
     def output_q_search_stop_confirm(self, serial_num):
         """Search stop msg of workers and put 'em in a list.
