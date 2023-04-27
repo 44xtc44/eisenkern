@@ -34,18 +34,19 @@ class ProcEnv:
         self.mp_print_q = Queue(maxsize=self.q_max_size)  # [!mp blocking!] OMG use sparse, formatted output
         self.mp_input_q = Queue(maxsize=self.q_max_size)  # order lists
         self.mp_output_q = Queue(maxsize=self.q_max_size)  # results and stop confirmation
-        self.mp_process_q = Queue(maxsize=self.q_max_size)  # stop order
         self.queue_std_dict = {'mp_info_q': self.mp_info_q,
                                'mp_tools_q': self.mp_tools_q,
                                'mp_print_q': self.mp_print_q,
                                'mp_input_q': self.mp_input_q,
                                'mp_output_q': self.mp_output_q,
-                               'mp_process_q': self.mp_process_q}
+                               }
         self.queue_cust_dict_std = {}  # std dict, val is a q
         self.queue_cust_dict_cat = {}  # custom category, dict in dict
         self.q_lst = []  # all queues in a list, clean up; 'queue_lst_get'
         # queue tuple (name, id, q_ref), all custom created queues will be appended
         self.q_name_id_lst = [('mp_input_q (default)', id(self.mp_input_q), self.mp_input_q)]
+        # pipe {key: val} {START_SEQUENCE_NUM: Pipe()}, process grabs start id pipe
+        self.pipe_default_dict = {}
 
         # Threads - Collect queue grabber
         self.thread_list = []
@@ -108,6 +109,22 @@ class ProcEnv:
         self.q_lst.extend(q_lst)
         return self.q_lst
 
+    def pipe_lst_create(self):
+        """[Not used so far.]"""
+        for idx in range(self.core_count_get()):
+            self.pipe_default_create(idx)
+
+    def pipe_default_create(self, start_sequence_num):
+        """[Not used so far.] Pipe creation is utter slow.
+
+        wait for worker sent msg's in wait list, then take random corresponding pipe to send list
+        iterator get ready_list=multiprocessing.connection.wait(p_wrk_sender_lst, timeout=None)
+        """
+        recv_mngr, send_wrk = mp.Pipe(duplex=True)  # worker send: 'RDY', manager recv msg remove from pipe
+        recv_wrk, send_mngr = mp.Pipe(duplex=True)  # manager send: list, worker recv list from pipe
+        new_dct = {start_sequence_num: (recv_mngr, send_wrk, recv_wrk, send_mngr)}
+        self.pipe_default_dict.update(new_dct)
+
     @staticmethod
     def core_count_get():
         """"""
@@ -124,7 +141,9 @@ class ProcEnv:
         kwargs.update(self.queue_cust_dict_cat)
         all_qs_dict = {const.ALL_QUEUES_LIST: self.queue_lst_get(),
                        'Q_NAME_ID_LST': self.q_name_id_lst}  # view q name,id,ref in debugger: 'q_name_id_lst'
+        all_pipes_dict = {'pipe_default_dict': self.pipe_default_dict}
         kwargs.update(all_qs_dict)
+        kwargs.update(all_pipes_dict)
         return kwargs
 
     def run_proc(self, **kwargs):
@@ -142,12 +161,13 @@ class ProcEnv:
         mp.set_start_method(start_method, force=True)
 
         print(f'\nCreate {self.PROCS_MAX} processes.')
-        for core in range(self.PROCS_MAX):
-            print(core, end=" ")
+        for proc_idx in range(self.PROCS_MAX):
+            print(proc_idx, end=" ")
             # start_sequence_num always starts zero and is independent of sub-process spawn number
-            start_sequence_num = {'START_SEQUENCE_NUM': core}  # worker in proc can grab a specific queue 0=red,1=blue
+            start_sequence_num = {'START_SEQUENCE_NUM': proc_idx}  # wrk in proc can grab a specific queue 0=red,1=blue
             kwargs.update(start_sequence_num)
-            self.kwargs_env.update(kwargs)  # pytest kwargs
+            # self.pipe_default_create(proc_idx)
+            self.kwargs_env.update(kwargs)  # pytest preserve kwargs
 
             proc = mp.Process(target=loader.mp_worker_entry,
                               kwargs=kwargs)
@@ -158,9 +178,6 @@ class ProcEnv:
 
     def stop_proc(self):
         """All worker must have confirmed shutdown msg."""
-        for proc in range(len(self.proc_list)):
-            self.mp_process_q.put(['Simon Says:', const.STOP_PROCESS])
-
         for process in self.proc_list:
             while process.is_alive():
                 time.sleep(.1)
