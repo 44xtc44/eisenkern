@@ -13,23 +13,14 @@ You feed:
 * number of processes and workload for a process
 * custom queues and variables for the worker
 
-Create instance:
 
-::
-
-    emp = eisen.Mp()
-
-Generator
-~~~~~~~~~~
-
-| Spread generator load over multiple processes with an in-build iterator.
-
-Queue creation methods
-~~~~~~~~~~~~~~~~~~~~~~
+Named Queue creation methods
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 | Eases the creation and debugging of multiple queues.
 | Standard Queue name: ``queue_cust_dict_std_create`` method
+| Queue name is **blue_q_7** and maxsize is 3
 
-::
+.. code-block:: python
 
     blue_q_7_max_3 = ('blue_q_7', 3)
     emp.queue_cust_dict_std_create(blue_q_7_max_3)
@@ -39,9 +30,9 @@ Queue creation methods
     emp.queue_cust_dict_std_create(*three_q_lst)
 
 | Category plus Queue name: ``queue_cust_dict_category_create`` method
-| Queue name is **category|queue_name** batch_1|audio_lg
+| Queue name will be **category|queue_name** category_1|input_q_3 and maxsize is 10
 
-::
+.. code-block:: python
 
     cat_1_input_q_3_max_10 = ('category_1', 'input_q_3', 10)
     emp.queue_cust_dict_category_create(cat_1_input_q_3_max_10)
@@ -57,7 +48,7 @@ Helps to debug Queue access.
 
 | View in Manager: queue names via object id, object reference or vice versa.
 
-::
+.. code-block:: python
 
     emp = eisen.Mp()
     emp.q_name_id_lst
@@ -67,7 +58,7 @@ Helps to debug Queue access.
 
 | View in Worker: Queues in ``toolbox.Q_NAME_ID_LST`` list. Where `toolbox` is your default worker argument name.
 
-::
+.. code-block:: python
 
     ('mp_input_q (default)', 2863011365072, <multiprocessing.queues.Queue object at 0x0000020E0F9252D0>)
     ('batch_1|audio_lg', 2863011368192, <multiprocessing.queues.Queue object at 0x0000020E0FD26D10>)
@@ -83,6 +74,35 @@ eisenmp worker module loader list reveals the modules to load.
 .. note::
     Loads independent. No imports of Main() module in the worker. No ``interesting behaviour``.
 
+.. code-block:: python
+
+    class ModuleConfiguration:
+
+    first_module = {
+        'worker_path': os.path.join(dir_name, 'worker', 'eisenmp_exa_wrk_csv.py'),
+        'worker_ref': 'worker_entrance',
+    }
+    watchdog_module = {
+        'WORKER_PATH': os.path.join(dir_name, 'worker', 'eisenmp_exa_wrk_watchdog.py'),
+        'WORKER_REF': 'mp_start_show_threads',
+    }
+
+    def __init__(self):
+        # load order list, first module is called in an endless loop, you can append your own loop inside the worker
+        self.worker_modules = [
+            self.first_module,  # second module must be started by a thread, else we hang
+            self.watchdog_module,
+        ]
+
+        # Multiprocess vars - override default
+        self.PROCS_MAX = 5  # your process count, default is None: one proc/CPU core
+        # max generator / ROWS_MAX = number of tickets; 10_000 / 42 = 238.095 -> 238 lists with ticket numbers
+        self.ROWS_MAX = 50_000  # workload spread, list (generator items) to calc in one loop, default is None: 1_000
+        self.RESULTS_STORE = True  # keep in dictionary, will crash the system if store GB network chunks in mem
+        self.RESULTS_PRINT = True  # result rows of output are collected in a list, display if processes are stopped
+        self.RESULTS_DICT_PRINT = True  # shows content of results dict with ticket numbers, check tickets
+        self.RESULT_LABEL = 'revised.csv, Average calculation'  # pretty print as result header for RESULTS_PRINT
+        # self.START_METHOD = 'fork'  # 'spawn' is default if unused; also use 'forkserver' or 'fork' on Unix only
 
 
 * All modules to start are collected in a `worker_modules` list. Load order is (LIFO) last in first out.
@@ -95,7 +115,7 @@ eisenmp worker module loader list reveals the modules to load.
 
 Second to last module *must* use a threaded start.
 
-::
+.. code-block:: python
 
     class ModuleConfiguration:  # name your own class and feed eisenmp with the dict
 
@@ -118,8 +138,13 @@ Second to last module *must* use a threaded start.
 
 kwargs
 ~~~~~~~~~~~
+Init many values and use them in the worker module.
 
-| eisenmp uses kwargs dictionary as a container (worker toolbox).
+.. note::
+    kwargs nickname is ``toolbox`` in the examples.
+    You can use your own.
+
+| eisenmp uses kwargs dictionary as an updatable container.
 | Custom variables, lists, objects created in the modConf instance are available for the worker module.
 | kwargs is updated with all Queue information and the current process Start ID ``toolbox.kwargs['START_SEQUENCE_NUM']``
 
@@ -158,7 +183,7 @@ Worker data variables
 
 | Worker data information is stored in ``modConf`` instance during configuration phase.
 
-::
+.. code-block:: python
 
     modConf = ModuleConfiguration()  # Accessible in the manager and worker module.
 
@@ -169,17 +194,17 @@ eisenmp Instance update and process start
 1. instantiate ``eisenmp``
 2. ``modConf`` instance dictionary is dumped into eisenmp, ``all attributes will be keys`` in kwargs.
 3. eisenmp updates kwargs dictionary further with ``custom created queues`` and ``process start id``
-4. Processes started, worker in process is blocked - queue input not yet available
-5. eisenmp Queue feeder threads started; or your own
+4. Processes started, worker in process is blocked - sits on queue and awaits input
+5. eisenmp Queue feeder threads start; or take your own
 
-::
+.. code-block:: python
 
     emp = eisenmp.Mp()
     emp.start(**modConf.__dict__)  # create processes, load worker mods, start threads (output_p coll, info)
 
 Example
 
-::
+.. code-block:: python
 
     def manager_entry():
         """
@@ -206,6 +231,7 @@ Example
         video_q_b7 = emp.queue_cust_dict_cat['batch_7']['video_in']  # toolbox.batch_7['video_in'].get()
 
         emp.start(**modConf.__dict__)  # create processes, load worker mods, start threads (output_p coll, info)
+
         emp.run_q_feeder(generator=audio_generator_batch_1(), input_q=audio_q_b1)
         emp.run_q_feeder(generator=video_generator_batch_1(), input_q=video_q_b1)
         emp.run_q_feeder(generator=audio_generator_batch_7(), input_q=audio_q_b7)

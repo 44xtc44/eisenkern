@@ -14,7 +14,7 @@ Features:
 * **Workload Chunks** with header to control output and speed up a specific task
 * Chunks get a serial number (ID), findings can be checked in a result dictionary, which ID is missing
 * **module_loader** decouples your Worker imports from Main()
-* **Categories of Queues**, assign Queues groups to Workers groups, use them in **ToolBox** dictionary (kwargs)
+* **Categories of Queues**, assign Names to Queues and groups of Queues
 * **Queue list** helps to debug your setup and reveals the name, object id and object reference of every Queue
 * **Print Queue** allows formatted print to screen for your processes (blocks)
 * No libraries, (Linux, Windows)
@@ -45,9 +45,9 @@ Let's name them **Manager.py** and **Worker.py**.
   :width: 640
   :alt: Worker module loader, loads independent, no imports of parent
 
-Default ``six Queues``
+Default Queues
 
-- ``Input`` worker lists, ``Output`` result and stop lists, ``Process`` shutdown
+- ``Input`` worker lists, ``Output`` result and stop lists
 - ``Tools``, ``Print``, ``Info``
 
 How to run the examples?

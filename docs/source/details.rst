@@ -104,7 +104,7 @@ Port groups
 
 ::
 
-    # port group
+    # port group - example from worker/eisenmp_exa_wrk_multi_srv_each_cpu.py
     proc_start_num = toolbox.kwargs['START_SEQUENCE_NUM']
 
     port, col = 0, None
@@ -155,5 +155,7 @@ Results
 
 Tools Queue
 ~~~~~~~~~~~~
-| Makes sense if you assign a *Tool* to one group of processes but not to the other.
-| This would be the case if you build a pipeline.
+| Large dictionaries via **mp_tools_q**.
+
+| You can assign large dictionaries via ModulConfiguration class also,
+| but this will lead to a process start delay if *spawn* is used. (copy)

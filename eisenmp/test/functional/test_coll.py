@@ -48,18 +48,18 @@ class TestColl(unittest.TestCase):
 
     def test_print_queue(self):
         """"""
-        emp = eisenmp.Mp()
-        emp.run_proc()
-        emp.enable_print_q()
+        emp = eisenmp.Mp()  # create queues
+        emp.enable_print_q()  # start collector thread
         msg = 'foo left the building'
         emp.mp_print_q.put(msg)
-        time.sleep(1)  # while crashes the coverage thingy
+        time.sleep(1)  # while loop crashes the coverage thingy
 
         assert msg in emp.print_q_box
-        for _ in emp.proc_list:
-            _.kill()
+        for t in emp.thread_list:
+            t.cancel()
+        e_utils.thread_shutdown_wait(*emp.thread_list)
 
-    def test_output_queue(self):
+    def test_output_queue_stop_msg(self):
         """not like print q, we need lists here for stop and result
         enable_output_q calls output_q_loop, calls stop msg func, result msg func
 
@@ -67,19 +67,36 @@ class TestColl(unittest.TestCase):
         worker endless loop broken, received stop from StopIteration queue feeder
         """
         emp = eisenmp.Mp()
-        emp.run_proc()
         emp.enable_output_q()
 
         process_name = 'Process-321'
         code_word_stop = 'foo bar'
-        code_word_result = 'blacklist'
         emp.mp_output_q.put([const.STOP_CONFIRM + process_name, code_word_stop])
-        emp.mp_output_q.put([const.OUTPUT_HEADER + process_name, code_word_result])
-        time.sleep(1)  # while loop crashes the coverage thingy [baustelle] coverage incident and fix self?
-
+        time.sleep(.1)
         result_lst = [row for key, val in emp.output_q_box.items() for row in val]
         assert code_word_stop in result_lst
+
+        for t in emp.thread_list:
+            t.cancel()
+        e_utils.thread_shutdown_wait(*emp.thread_list)
+
+    def test_output_queue_result_msg(self):
+        """not like print q, we need lists here for stop and result
+        enable_output_q calls output_q_loop, calls stop msg func, result msg func
+
+        loader.all_worker_exit_msg(**emp.kwargs_env)
+        worker endless loop broken, received stop from StopIteration queue feeder
+        """
+        emp = eisenmp.Mp()
+        emp.enable_output_q()
+
+        process_name = 'Process-321'
+        code_word_result = 'blacklist'
+        emp.mp_output_q.put([const.OUTPUT_HEADER + process_name, code_word_result])
+        time.sleep(.1)
+        result_lst = [row for key, val in emp.output_q_box.items() for row in val]
         assert code_word_result in result_lst
 
-        for _ in emp.proc_list:
-            _.kill()
+        for t in emp.thread_list:
+            t.cancel()
+        e_utils.thread_shutdown_wait(*emp.thread_list)

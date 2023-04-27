@@ -29,7 +29,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 # pip install sphinxcontrib-napoleon
 # Use sphinx-apidoc to build your API documentation:
 # $ cd docs
-# $ sphinx-apidoc -f -o source/ ../eisenmp/   (use full paths for both, __init__.py in the project folders)
+# $ sphinx-apidoc -f -o source/ ../eisenmp/   (use full paths for both, __init__.py(ok).py in the project folders)
 # make html; .\make html, on powerShell
 
 # Docstring Sections¶
@@ -73,7 +73,6 @@ sys.path.insert(0, os.path.abspath('../..'))
 project = 'eisenmp'
 copyright = 'BSD-3-Clause, 2023, René Horn'
 author = 'René Horn'
-
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
