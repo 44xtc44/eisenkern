@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "eisenmp"
 version = "1.0"
 authors = [{name = "René Horn", email = "rene_horn@gmx.net" }]
-description = "Multiprocess Framework for Server and Mobiles; run your generator output and server on every CPU core,"
+description = "Multiprocess Framework for Server; run your generator output and server on every CPU core,"
 keywords = ['multiprocess framework', 'python multiprocessor framework']
 license = {file = "LICENSE.rst"}
 readme = "README.rst"
