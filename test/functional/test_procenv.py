@@ -74,15 +74,6 @@ class TestProcEnv(unittest.TestCase):
         # {key: proc start, value overwritten until core_count}
         assert emp.kwargs_env['START_SEQUENCE_NUM'] == core_count - 1  # core_count starts zero
 
-        # 'seems' to be reason for GitHub actions fails; eisenmp_OutputQThread active
-        for proc in emp.proc_list:
-            proc.terminate()
-            proc.kill()
-            proc.join()
-        for t in emp.thread_list:
-            t.cancel()
-            t.join()
-
     @staticmethod
     def coverage_fails_test_run_proc_wait_fail_worker_loader():  # pragma: no cover
         """Coverage fails to assign no cover attribute and breaks the test
