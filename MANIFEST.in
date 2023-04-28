@@ -1,0 +1,8 @@
+include LICENSE.rst
+include MANIFEST.in
+recursive-include eisenmp *
+recursive-include docs *
+prune docs/build
+prune venv
+prune test
+prune eisenmp/.idea
